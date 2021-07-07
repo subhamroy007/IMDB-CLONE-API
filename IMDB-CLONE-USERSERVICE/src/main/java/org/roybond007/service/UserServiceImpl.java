@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.roybond007.exception.UserCreateException;
 import org.roybond007.exception.UserVerificationException;
 import org.roybond007.model.dto.UserSignupRequestBody;
+import org.roybond007.model.dto.FollowStatusResponseBody;
 import org.roybond007.model.dto.UserAuthenticationResponseBody;
 import org.roybond007.model.dto.UserSigninRequestBody;
 import org.roybond007.model.entity.UserEntity;
@@ -115,5 +116,12 @@ public class UserServiceImpl implements UserService {
 		return userAuthenticationResponseBody;
 	}
 	
+	@Override
+	public FollowStatusResponseBody updateFollowStatus(String currentUserId, String targetUserId) {
+		
+		FollowStatusResponseBody followStatusResponseBody = userEntityRepository.updateFollowStatus(currentUserId, targetUserId);
+		
+		return followStatusResponseBody;
+	}
 
 }

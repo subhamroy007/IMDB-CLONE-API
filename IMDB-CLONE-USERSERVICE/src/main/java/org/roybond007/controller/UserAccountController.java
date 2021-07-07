@@ -81,10 +81,5 @@ public class UserAccountController {
 		return ResponseEntity.ok(userAuthenticationResponseBody);
 	}
 	
-	@GetMapping("/test")
-	public String getTest() {
-		
-		return "hello world";
-	}
 	
 }
