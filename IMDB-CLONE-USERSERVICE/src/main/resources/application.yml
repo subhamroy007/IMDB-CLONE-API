@@ -1,0 +1,6 @@
+server:
+  port: 8080
+  
+token:
+  secret_key: sdvsdvsdvkbkjsdkvksdvksdvksdbvkbsdkvbdkv
+  validity_period: 200000

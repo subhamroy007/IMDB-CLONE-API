@@ -1,35 +1,53 @@
 package org.roybond007.service;
 
+import java.util.ArrayList;
+
 import org.roybond007.exception.UserCreateException;
+import org.roybond007.exception.UserVerificationException;
 import org.roybond007.model.dto.UserSignupRequestBody;
-import org.roybond007.model.dto.UserSignupResponseBody;
+import org.roybond007.model.dto.UserAuthenticationResponseBody;
+import org.roybond007.model.dto.UserSigninRequestBody;
 import org.roybond007.model.entity.UserEntity;
 import org.roybond007.repository.UserEntityRepository;
 import org.roybond007.utils.ErrorUtility;
 import org.roybond007.utils.JwtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserServiceImpl implements UserService {
-
+	
 	private final PasswordEncoder passwordEncoder;
 	
 	private final UserEntityRepository userEntityRepository;
 	
 	private final JwtUtility jwtUtility;
 	
+	private final AuthenticationManager authenticationManager;
+	
+	private final UserDetailsService userDetailsService;
+	
 	@Autowired
-	public UserServiceImpl(PasswordEncoder passwordEncoder, UserEntityRepository userEntityRepository, JwtUtility jwtUtility) {
+	public UserServiceImpl(PasswordEncoder passwordEncoder, UserEntityRepository userEntityRepository
+							, JwtUtility jwtUtility, AuthenticationManager authenticationManager
+							, UserDetailsService userDetailsService) {
 		this.passwordEncoder = passwordEncoder;
 		this.userEntityRepository = userEntityRepository;
 		this.jwtUtility = jwtUtility;
+		this.authenticationManager = authenticationManager;
+		this.userDetailsService = userDetailsService;
 	}
 	
 	@Override
-	public UserSignupResponseBody createNewUserEntity(UserSignupRequestBody userSignupRequestBody) {
+	public UserAuthenticationResponseBody createNewUserEntity(UserSignupRequestBody userSignupRequestBody) {
 	
 		UserEntity userEntity = new UserEntity();
 		
@@ -64,11 +82,38 @@ public class UserServiceImpl implements UserService {
 							.roles(target.getRoles())
 							.build();
 		
-		UserSignupResponseBody userSignupResponseBody = new UserSignupResponseBody(jwtUtility.generateToken(newUser));
+		UserAuthenticationResponseBody userAuthenticationResponseBody = 
+				new UserAuthenticationResponseBody(jwtUtility.generateToken(newUser));
 		
-		return userSignupResponseBody;
+		return userAuthenticationResponseBody;
 	}
 
-
+	
+	@Override
+	public UserAuthenticationResponseBody authenticateUserEntity(UserSigninRequestBody signupRequestBody) {
+		
+		try {
+			UsernamePasswordAuthenticationToken authenticationToken = 
+					new UsernamePasswordAuthenticationToken(signupRequestBody.getUserId(), 
+															signupRequestBody.getPassword(), 
+															new ArrayList<>());
+			
+			authenticationManager.authenticate(authenticationToken);
+			
+		} catch (BadCredentialsException ex) {
+			System.out.println(ex.getLocalizedMessage());
+			throw new UserVerificationException(ErrorUtility.SIGN_IN_FAILED_CODE
+												, ErrorUtility.SIGN_IN_FAILED_MSG
+												, signupRequestBody.getUserId());
+		}
+		
+		UserDetails userDetails = userDetailsService.loadUserByUsername(signupRequestBody.getUserId());
+		
+		UserAuthenticationResponseBody userAuthenticationResponseBody = 
+				new UserAuthenticationResponseBody(jwtUtility.generateToken(userDetails));
+		
+		return userAuthenticationResponseBody;
+	}
+	
 
 }

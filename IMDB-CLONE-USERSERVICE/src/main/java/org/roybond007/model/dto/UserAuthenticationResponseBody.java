@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserSignupResponseBody {
+public class UserAuthenticationResponseBody {
 
 	private String token;
 	

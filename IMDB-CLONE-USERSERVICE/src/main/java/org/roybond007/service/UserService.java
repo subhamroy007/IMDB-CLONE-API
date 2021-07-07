@@ -2,10 +2,16 @@ package org.roybond007.service;
 
 
 import org.roybond007.model.dto.UserSignupRequestBody;
-import org.roybond007.model.dto.UserSignupResponseBody;
+
+import javax.validation.Valid;
+
+import org.roybond007.model.dto.UserAuthenticationResponseBody;
+import org.roybond007.model.dto.UserSigninRequestBody;
 
 public interface UserService {
 
-	UserSignupResponseBody createNewUserEntity(UserSignupRequestBody userSignupRequestBody);
+	UserAuthenticationResponseBody createNewUserEntity(UserSignupRequestBody userSignupRequestBody);
+
+	UserAuthenticationResponseBody authenticateUserEntity(UserSigninRequestBody signupRequestBody);
 
 }
