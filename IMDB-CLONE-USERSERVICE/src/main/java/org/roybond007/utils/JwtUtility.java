@@ -3,10 +3,13 @@ package org.roybond007.utils;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -47,8 +50,12 @@ public class JwtUtility {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         
+        //Set<SimpleGrantedAuthority> authorities = (Set<SimpleGrantedAuthority>) userDetails.getAuthorities();
+        
+        //System.out.println(authorities);
+        
         claims.put("password", userDetails.getPassword());
-        claims.put("roles", userDetails.getAuthorities());
+        //claims.put("roles", authorities);
         claims.put("active", userDetails.isEnabled());
         
         return createToken(claims, userDetails.getUsername());

@@ -1,9 +1,10 @@
 package org.roybond007.filters;
 
-import org.roybond007.model.entity.UserEntity;
+import java.util.ArrayList;
+import java.util.Set;
+
 import org.roybond007.repository.UserEntityRepository;
 import org.roybond007.utils.JwtUtility;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpStatus;
@@ -39,35 +40,52 @@ public class CustomTokenValidationFilter implements GatewayFilter{
 		String token = exchange.getRequest().getHeaders().getOrEmpty("Authorization").get(0);
 		String userId = exchange.getRequest().getHeaders().getOrEmpty("u_id").get(0);
 		
+		System.out.println(token);
+		System.out.println(userId);
 		
-		UserEntity userEntity = userEntityRepository.findByUserId(userId).block();
-		
+		Mono<Void> result = userEntityRepository.findByUserId(userId).flatMap(entity -> {
 			
+			if(entity == null) {
+				System.out.println("entity not found");
+				return errorMsg(exchange);
+			}
+			
+			if(!jwtUtility.validateToken(token, entity)) {
+				System.out.println("token not valid");
+				return errorMsg(exchange);
+			}
+			
+			System.out.println("adding header");
+			addHeaders(exchange, token, entity.getRoles());
+			
+			return chain.filter(exchange);
+		});
 		
-		if(userEntity == null) {
-			return errorMsg(exchange);
-		}
-		
-		if(!jwtUtility.validateToken(token, null)) {
-			return errorMsg(exchange);
-		}
-		
-		addHeaders(exchange, token);
-		
-		return chain.filter(exchange);
+		return result;
 	}
 
-	private void addHeaders(ServerWebExchange exchange, String token) {
+	private void addHeaders(ServerWebExchange exchange, String token, String[]  roles) {
 		
 		Claims claims = jwtUtility.extractAllClaims(token);
+		
+		String userId = claims.getSubject();
+		String password = claims.get("password", String.class);
+		boolean active = claims.get("active", Boolean.class);
+		String roleHeader = "";
+		
+		for (String role : roles) {
+			roleHeader = roleHeader + role;
+		}
+		
+		roleHeader.trim();
 		
 		exchange
 			.getRequest()
 			.mutate()
-			.header("userId", claims.getSubject())
-			.header("password", claims.get("password", String.class))
-			.header("active", claims.get("active", String.class))
-			.header("roles", claims.get("roles", String[].class))
+			.header("userId", userId)
+			.header("password", password)
+			.header("active", String.valueOf(active))
+			.header("roles", roles)
 			.build();
 		
 	}

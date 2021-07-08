@@ -1,6 +1,8 @@
 package org.roybond007.utils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.roybond007.model.entity.UserEntity;
@@ -29,14 +31,29 @@ public class JwtUtility {
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+        if(claims != null)
+        	return claimsResolver.apply(claims);
+        return null;
     }
     public Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(TOKEN_SECRET_KEY).parseClaimsJws(token).getBody();
+        
+    	Claims claims = null;
+    	
+    	try {
+    		claims = Jwts.parser().setSigningKey(TOKEN_SECRET_KEY).parseClaimsJws(token).getBody();
+		} catch (RuntimeException ex) {
+			System.err.println(ex.getLocalizedMessage());
+		}
+    	
+    	return claims;
     }
 
     public Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        try {
+        	return extractExpiration(token).before(new Date());
+		} catch (Exception e) {
+			return true;
+		}
     }
 
 
@@ -45,9 +62,11 @@ public class JwtUtility {
         
         Claims claims = extractAllClaims(token);
         
+        if(claims == null)
+        	return false;
+        
         final String password = claims.get("password", String.class);
         final boolean isActive = claims.get("active", Boolean.class);
-        //final Collection<Object> authorities = claims.get("roles", Collection.class);
         
        
         

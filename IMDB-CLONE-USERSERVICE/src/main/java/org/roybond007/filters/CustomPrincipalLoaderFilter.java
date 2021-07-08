@@ -64,7 +64,7 @@ public class CustomPrincipalLoaderFilter extends OncePerRequestFilter {
 		if(userId != null && password != null && isActive && roles != null && roles.length != 0) {
 			UsernamePasswordAuthenticationToken authenticationToken = 
 					new UsernamePasswordAuthenticationToken(userId, password, authorities);
-			authenticationToken.setAuthenticated(true);
+			//authenticationToken.setAuthenticated(true);
 			SecurityContextHolder.createEmptyContext().setAuthentication(authenticationToken);
 		}
 		

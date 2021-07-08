@@ -38,25 +38,25 @@ spring:
       routes:
       - id: AUTH-ROUTE
         predicates:
-        - Path=/auth/**
+        - Path=/auth/{segment}
         - Method=POST
-        - Query=target_user_id
         filters:
         - name: RequestSize
           args:
             maxSize: 200KB
-        - RewritePath=/auth/?(?<segment>.*), /user/account/$\{segment}
+        - SetPath=/user/account/{segment}
         uri: lb://imdb-clone-userservice
       - id: MANAGMENT-ROUTE
         predicates:
-        - Path=/user/**
+        - Path=/user/followrequest/{id}
         - Method=POST
         filters:
         - CustomTokenValidationFilterFactory
         - name: RequestSize
           args:
             maxSize: 1KB
-        - RewritePath=/user/?(?<segment>.*), /user/managment/$\{segment}
+        - SetPath=/user/managment/followrequest?target_user_id={id}
+        
         uri: lb://imdb-clone-userservice
           
 discovery:
