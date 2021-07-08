@@ -1,6 +1,39 @@
 server:
-  port: 8080
+  port: 0
   
 token:
   secret_key: sdvsdvsdvkbkjsdkvksdvksdvksdbvkbsdkvbdkv
   validity_period: 200000
+
+
+discovery:
+  server:
+    username: aaaaaaaaaaaa
+    password: bbbbbbbbbbb
+  
+spring:
+  application:
+    name: IMDB-CLONE-USERSERVICE
+
+    
+eureka: 
+  instance:
+    healthCheckUrlPath: /myhealth
+    statusPageUrlPath: /myinfo
+    securePortEnabled: false
+    nonSecurePortEnabled: true
+    instance-id: ${spring.application.name}:${random.value}:${server.port}
+    lease-renewal-interval-in-seconds: 28
+    metadata-map:
+      key1: value1
+  client:
+    refresh:
+      enable: true
+    enabled: true
+    registerWithEureka: true
+    fetchRegistry: true
+    healthcheck:
+      enabled: false
+    serviceUrl:
+      defaultZone: http://${discovery.server.username}:${discovery.server.password}@localhost:8081/eureka/
+  

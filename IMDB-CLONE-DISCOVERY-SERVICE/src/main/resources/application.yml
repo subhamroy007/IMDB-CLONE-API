@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: IMDB-CLONE-DISCOVERY-SERVICE
+  security:
+    user:
+      name: aaaaaaaaaaaa
+      password: bbbbbbbbbbb
+
+
+eureka:
+  instance:
+    hostname: localhost
+    securePortEnabled: false
+    nonSecurePortEnabled: true
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    healthcheck:
+      enabled: false
+    serviceUrl: 
+      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}/eureka/ 
+      

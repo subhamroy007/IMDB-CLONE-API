@@ -109,6 +109,7 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 				}
 				
 			}catch (DataAccessException ex) {
+				System.err.println(ex.getLocalizedMessage());
 				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
 			}
 			
@@ -128,6 +129,7 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 				followStatusResponseBody.setNoOfFollowers(targetUserEntityFollowStatusUserEntity.get().getNoOfFollowers());
 				
 			}catch (DataAccessException ex) {
+				System.err.println(ex.getLocalizedMessage());
 				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
 			}
 			
@@ -162,6 +164,7 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 				}
 				
 			}catch (DataAccessException ex) {
+				System.err.println(ex.getLocalizedMessage());
 				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
 			}
 			
@@ -177,6 +180,7 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 				followStatusResponseBody.setNoOfFollowers(targetUserEntityFollowStatusUserEntity.get().getNoOfFollowers());
 				
 			}catch (DataAccessException ex) {
+				System.err.println(ex.getLocalizedMessage());
 				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
 			}
 			
