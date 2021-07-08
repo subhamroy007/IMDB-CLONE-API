@@ -1,0 +1,90 @@
+#embeddeb server container depedencies
+server:
+  port: 8082
+
+
+token:
+  secret_key: sdvsdvsdvkbkjsdkvksdvksdvksdbvkbsdkvbdkv
+  validity_period: 200000
+
+#application specfic dependency
+spring:
+  application:
+    name: IMDB-CLONE-API-GATEWAY
+  cloud:
+    gateway: 
+      enabled: true
+      default-filters:
+      - AddRequestHeader=gateway-key, ${gateway.key}
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+            - GET
+            - POST
+            - UPDATE
+            - DELETE
+      httpclient:
+        connect-timeout: 12000
+        response-timeout: 5s
+      loadbalancer:
+        use404: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+      - id: AUTH-ROUTE
+        predicates:
+        - Path=/auth/**
+        - Method=POST
+        - Query=target_user_id
+        filters:
+        - name: RequestSize
+          args:
+            maxSize: 200KB
+        - RewritePath=/auth/?(?<segment>.*), /user/account/$\{segment}
+        uri: lb://imdb-clone-userservice
+      - id: MANAGMENT-ROUTE
+        predicates:
+        - Path=/user/**
+        - Method=POST
+        filters:
+        - CustomTokenValidationFilterFactory
+        - name: RequestSize
+          args:
+            maxSize: 1KB
+        - RewritePath=/user/?(?<segment>.*), /user/managment/$\{segment}
+        uri: lb://imdb-clone-userservice
+          
+discovery:
+  server:
+    username: aaaaaaaaaaaa
+    password: bbbbbbbbbbb
+
+gateway:
+  key: mygatewaykey
+
+#eureka registry client and instance configuration
+eureka: 
+  instance:
+    healthCheckUrlPath: /myhealth
+    statusPageUrlPath: /myinfo
+    securePortEnabled: false
+    nonSecurePortEnabled: true
+    instance-id: ${spring.application.name}:${random.value}:${server.port}
+    lease-renewal-interval-in-seconds: 28
+  client:
+    refresh:
+      enable: true
+    enabled: true
+    registerWithEureka: true
+    fetchRegistry: true
+    healthcheck:
+      enabled: false
+    serviceUrl:
+      defaultZone: http://${discovery.server.username}:${discovery.server.password}@localhost:8081/eureka/
+  
+

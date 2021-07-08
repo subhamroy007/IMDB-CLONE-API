@@ -15,6 +15,9 @@ spring:
   application:
     name: IMDB-CLONE-USERSERVICE
 
+
+gateway:
+  key: mygatewaykey
     
 eureka: 
   instance:
@@ -24,8 +27,6 @@ eureka:
     nonSecurePortEnabled: true
     instance-id: ${spring.application.name}:${random.value}:${server.port}
     lease-renewal-interval-in-seconds: 28
-    metadata-map:
-      key1: value1
   client:
     refresh:
       enable: true

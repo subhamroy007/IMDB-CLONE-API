@@ -14,5 +14,6 @@ import lombok.ToString;
 public class UserAuthenticationResponseBody {
 
 	private String token;
+	private String userId;
 	
 }

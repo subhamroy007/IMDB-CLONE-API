@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
 							.build();
 		
 		UserAuthenticationResponseBody userAuthenticationResponseBody = 
-				new UserAuthenticationResponseBody(jwtUtility.generateToken(newUser));
+				new UserAuthenticationResponseBody(jwtUtility.generateToken(newUser), userSignupRequestBody.getUserId());
 		
 		return userAuthenticationResponseBody;
 	}
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(signupRequestBody.getUserId());
 		
 		UserAuthenticationResponseBody userAuthenticationResponseBody = 
-				new UserAuthenticationResponseBody(jwtUtility.generateToken(userDetails));
+				new UserAuthenticationResponseBody(jwtUtility.generateToken(userDetails), signupRequestBody.getUserId());
 		
 		return userAuthenticationResponseBody;
 	}
