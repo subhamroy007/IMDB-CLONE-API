@@ -14,8 +14,8 @@ import lombok.ToString;
 @ToString
 public class ErrorResponseBody {
 	
-	private final int ERROR_CODE;
-	private final String ERROR_MSG;
-	private final Map<String, Object> data;
+	private final int code;
+	private final String msg;
+	private final Map<String, Object> reason;
 	
 }
