@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,16 +36,15 @@ public class CustomPrincipalLoaderFilter extends OncePerRequestFilter {
 		
 		if(!verifiyGatewayOrgin(request)) {
 			
+			System.err.println("token not verified");
+			
 			response.setCharacterEncoding("UTF-8");
-			response.setContentType("text/html");
-			response.setContentLength("gateway key not matched".length());
+			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+			response.setContentLength(0);
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
-			PrintWriter writer = response.getWriter();
-			writer.append("gateway key not matched");
-			writer.flush();
-			writer.close();
 			return ;
 		}
+		
 		
 		String userId = request.getHeader("userId");
 		String password = request.getHeader("password");
@@ -61,11 +61,10 @@ public class CustomPrincipalLoaderFilter extends OncePerRequestFilter {
 				authorities.add(new SimpleGrantedAuthority(r));
 			}
 		
-		if(userId != null && password != null && isActive && roles != null && roles.length != 0) {
+		if((userId != null) && (password != null) && isActive && (roles != null) && (roles.length != 0)) {
 			UsernamePasswordAuthenticationToken authenticationToken = 
 					new UsernamePasswordAuthenticationToken(userId, password, authorities);
-			//authenticationToken.setAuthenticated(true);
-			SecurityContextHolder.createEmptyContext().setAuthentication(authenticationToken);
+			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 		}
 		
 		filterChain.doFilter(request, response);

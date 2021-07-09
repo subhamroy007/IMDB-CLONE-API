@@ -45,10 +45,10 @@ public class UserAccountController {
 		if(result.hasErrors()) {
 			System.err.println("something went wrong when validating user signup request body");
 			result.getFieldErrors().forEach(error -> {
-				System.out.println(error.getField() + "-->" + error.getDefaultMessage());
+				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
 			});
 			throw new CustomValidationException(result.getFieldErrors()
-					, ErrorUtility.SIGN_UP_FAILED_CODE
+					, ErrorUtility.VALIDATION_FAILED_CODE
 					, ErrorUtility.SIGN_UP_FAILED_MSG);
 		}
 		
@@ -69,10 +69,10 @@ public class UserAccountController {
 		if(result.hasErrors()) {
 			System.err.println("something went wrong when validating user signin request body");
 			result.getFieldErrors().forEach(error -> {
-				System.out.println(error.getField() + "-->" + error.getDefaultMessage());
+				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
 			});
 			throw new CustomValidationException(result.getFieldErrors()
-					, ErrorUtility.SIGN_IN_FAILED_CODE
+					, ErrorUtility.VALIDATION_FAILED_CODE
 					, ErrorUtility.SIGN_IN_FAILED_MSG);
 		}
 		

@@ -13,7 +13,7 @@ public interface UserService {
 
 	UserAuthenticationResponseBody createNewUserEntity(UserSignupRequestBody userSignupRequestBody);
 
-	UserAuthenticationResponseBody authenticateUserEntity(UserSigninRequestBody signupRequestBody);
+	UserAuthenticationResponseBody authenticateUserEntity(UserSigninRequestBody signinRequestBody);
 
 	FollowStatusResponseBody updateFollowStatus(String currentUserId, String targetUserId);
 

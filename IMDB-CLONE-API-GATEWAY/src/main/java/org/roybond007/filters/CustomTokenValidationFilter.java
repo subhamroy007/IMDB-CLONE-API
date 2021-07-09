@@ -1,8 +1,5 @@
 package org.roybond007.filters;
 
-import java.util.ArrayList;
-import java.util.Set;
-
 import org.roybond007.repository.UserEntityRepository;
 import org.roybond007.utils.JwtUtility;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -34,28 +31,26 @@ public class CustomTokenValidationFilter implements GatewayFilter{
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		
 		if(!isHeaderAvailable(exchange)) {
+			System.err.println("authorization/u_id header not found");
 			return errorMsg(exchange);
 		}
 		
 		String token = exchange.getRequest().getHeaders().getOrEmpty("Authorization").get(0);
 		String userId = exchange.getRequest().getHeaders().getOrEmpty("u_id").get(0);
 		
-		System.out.println(token);
-		System.out.println(userId);
 		
 		Mono<Void> result = userEntityRepository.findByUserId(userId).flatMap(entity -> {
 			
 			if(entity == null) {
-				System.out.println("entity not found");
+				System.err.println("userid " + userId + " not found in the database sent in u_id header");
 				return errorMsg(exchange);
 			}
 			
 			if(!jwtUtility.validateToken(token, entity)) {
-				System.out.println("token not valid");
+				System.err.println("token not valid sent in the Authorization header");
 				return errorMsg(exchange);
 			}
 			
-			System.out.println("adding header");
 			addHeaders(exchange, token, entity.getRoles());
 			
 			return chain.filter(exchange);
@@ -102,7 +97,8 @@ public class CustomTokenValidationFilter implements GatewayFilter{
 
 	private boolean isHeaderAvailable(ServerWebExchange exchange) {
 		
-		return exchange.getRequest().getHeaders().containsKey("Authorization");
+		return exchange.getRequest().getHeaders().containsKey("Authorization") 
+				&& exchange.getRequest().getHeaders().containsKey("u_id");
 	}
 
 	

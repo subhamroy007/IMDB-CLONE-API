@@ -44,7 +44,7 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 		fetchCurrentUserEntityQuery
 			.fields()
 			.include("_id", "userId", "noOfFollowings")
-			.elemMatch("followingList", where("id").is(targetUserId));
+			.elemMatch("followingList", where("_id").is(targetUserId));
 		
 		Query fetchTargetUserEntityQuery = new Query(where("userId").is(targetUserId));
 		fetchTargetUserEntityQuery
@@ -64,13 +64,17 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 			
 			
 		}catch (IllegalArgumentException ex) {
+			System.err.println(ex.getLocalizedMessage());
+			throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
 			
 		}catch (DataAccessException ex) {
-			
+			System.err.println(ex.getLocalizedMessage());
+			throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
 		}
 		
 		if(result.isEmpty()) { //this conditional block runs if the current provided user does not exist
-			throw new UserEntityNotFoundException(ErrorUtility.USER_ENTITY_NOT_FOUND, ErrorUtility.FOLLOW_REQUEST_FAILED, currentUserId);
+			System.err.println("userid " + currentUserId + " not fouund");
+			throw new UserEntityNotFoundException(ErrorUtility.ENTITY_NOT_FOUND, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, currentUserId);
 		}
 		
 		UserEntity target = result.get();
@@ -105,12 +109,13 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 					.apply(currentUserEntityFollowStatusUpdate)
 					.first();
 				if(!currentUserEntityFollowStatusUpdateResult.wasAcknowledged()) {
-					throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
+					System.err.println("database acknoledgement failed in follow request");
+					throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
 				}
 				
 			}catch (DataAccessException ex) {
 				System.err.println(ex.getLocalizedMessage());
-				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
+				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
 			}
 			
 			
@@ -123,14 +128,15 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 					.findAndModify();
 				
 				if(targetUserEntityFollowStatusUserEntity.isEmpty()) {
-					throw new UserEntityNotFoundException(ErrorUtility.USER_ENTITY_NOT_FOUND, ErrorUtility.FOLLOW_REQUEST_FAILED, currentUserId);
+					System.err.println("userid " + targetUserId + " not found");
+					throw new UserEntityNotFoundException(ErrorUtility.ENTITY_NOT_FOUND, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, targetUserId);
 				}
 				
 				followStatusResponseBody.setNoOfFollowers(targetUserEntityFollowStatusUserEntity.get().getNoOfFollowers());
 				
 			}catch (DataAccessException ex) {
 				System.err.println(ex.getLocalizedMessage());
-				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
+				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
 			}
 			
 			
@@ -160,12 +166,13 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 					.apply(currentUserEntityFollowStatusUpdate)
 					.first();
 				if(!currentUserEntityFollowStatusUpdateResult.wasAcknowledged()) {
-					throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
+					System.err.println("database acknoledgement failed in follow request");
+					throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
 				}
 				
 			}catch (DataAccessException ex) {
 				System.err.println(ex.getLocalizedMessage());
-				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
+				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
 			}
 			
 			
@@ -181,7 +188,7 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 				
 			}catch (DataAccessException ex) {
 				System.err.println(ex.getLocalizedMessage());
-				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED);
+				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
 			}
 			
 		}

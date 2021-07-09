@@ -68,10 +68,10 @@ public class UserServiceImpl implements UserService {
 			target = userEntityRepository.save(userEntity);
 		} catch (IllegalArgumentException ex) {
 			System.err.println(ex.getLocalizedMessage());
-			throw new UserCreateException(ErrorUtility.SIGN_UP_FAILED_CODE, ErrorUtility.SIGN_UP_FAILED_MSG);
+			throw new UserCreateException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.SIGN_UP_FAILED_MSG);
 		} catch (DataAccessException ex) {
 			System.err.println(ex.getLocalizedMessage());
-			throw new UserCreateException(ErrorUtility.SIGN_UP_FAILED_CODE, ErrorUtility.SIGN_UP_FAILED_MSG);
+			throw new UserCreateException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.SIGN_UP_FAILED_MSG);
 		}
 		
 		UserDetails newUser = User.withUsername(target.getUserId())
@@ -91,27 +91,27 @@ public class UserServiceImpl implements UserService {
 
 	
 	@Override
-	public UserAuthenticationResponseBody authenticateUserEntity(UserSigninRequestBody signupRequestBody) {
+	public UserAuthenticationResponseBody authenticateUserEntity(UserSigninRequestBody signinRequestBody) {
 		
 		try {
 			UsernamePasswordAuthenticationToken authenticationToken = 
-					new UsernamePasswordAuthenticationToken(signupRequestBody.getUserId(), 
-															signupRequestBody.getPassword(), 
+					new UsernamePasswordAuthenticationToken(signinRequestBody.getUserId(), 
+															signinRequestBody.getPassword(), 
 															new ArrayList<>());
 			
 			authenticationManager.authenticate(authenticationToken);
 			
 		} catch (BadCredentialsException ex) {
-			System.out.println(ex.getLocalizedMessage());
-			throw new UserVerificationException(ErrorUtility.SIGN_IN_FAILED_CODE
+			System.err.println(ex.getLocalizedMessage());
+			throw new UserVerificationException(ErrorUtility.CREDENTIAL_NOT_MATCH_ERROR_CODE
 												, ErrorUtility.SIGN_IN_FAILED_MSG
-												, signupRequestBody.getUserId());
+												, signinRequestBody.getUserId());
 		}
 		
-		UserDetails userDetails = userDetailsService.loadUserByUsername(signupRequestBody.getUserId());
+		UserDetails userDetails = userDetailsService.loadUserByUsername(signinRequestBody.getUserId());
 		
 		UserAuthenticationResponseBody userAuthenticationResponseBody = 
-				new UserAuthenticationResponseBody(jwtUtility.generateToken(userDetails), signupRequestBody.getUserId());
+				new UserAuthenticationResponseBody(jwtUtility.generateToken(userDetails), signinRequestBody.getUserId());
 		
 		return userAuthenticationResponseBody;
 	}

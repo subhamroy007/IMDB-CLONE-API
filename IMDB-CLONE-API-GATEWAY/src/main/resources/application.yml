@@ -48,16 +48,17 @@ spring:
         uri: lb://imdb-clone-userservice
       - id: MANAGMENT-ROUTE
         predicates:
-        - Path=/user/followrequest/{id}
+        - Path=/user/followrequest
         - Method=POST
+        - Query=target_user_id
         filters:
         - CustomTokenValidationFilterFactory
         - name: RequestSize
           args:
             maxSize: 1KB
-        - SetPath=/user/managment/followrequest?target_user_id={id}
-        
+        - SetPath=/user/managment/followrequest
         uri: lb://imdb-clone-userservice
+
           
 discovery:
   server:
