@@ -3,7 +3,7 @@ server:
   
 token:
   secret_key: sdvsdvsdvkbkjsdkvksdvksdvksdbvkbsdkvbdkv
-  validity_period: 200000
+  validity_period: 20000000
 
 
 discovery:

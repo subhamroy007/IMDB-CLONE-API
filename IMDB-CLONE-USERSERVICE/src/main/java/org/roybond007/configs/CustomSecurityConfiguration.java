@@ -36,6 +36,8 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter{
 		http
 			.csrf()
 			.disable()
+			.cors()
+			.disable()
 			.addFilterBefore(customPrincipalLoaderFilter, UsernamePasswordAuthenticationFilter.class)
 			.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/user/account/signup", "/user/account/signin").permitAll()

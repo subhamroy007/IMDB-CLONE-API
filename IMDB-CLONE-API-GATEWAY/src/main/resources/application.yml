@@ -5,7 +5,7 @@ server:
 
 token:
   secret_key: sdvsdvsdvkbkjsdkvksdvksdvksdbvkbsdkvbdkv
-  validity_period: 200000
+  validity_period: 20000000
 
 #application specfic dependency
 spring:
@@ -16,19 +16,21 @@ spring:
       enabled: true
       default-filters:
       - AddRequestHeader=gateway-key, ${gateway.key}
+      - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Methods Access-Control-Allow-Headers Access-Control-Max-Age
       globalcors:
         add-to-simple-url-handler-mapping: true
-        cors-configurations:
+        corsConfigurations:
           '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-            - GET
-            - POST
-            - UPDATE
-            - DELETE
+              allowedOrigins: 
+              - "*"
+              allowedMethods: "*"
+              allowedHeaders: "*"
+              exposedHeaders: "*"
+              allowCredentials: false
+              maxAge: 20000
       httpclient:
-        connect-timeout: 12000
-        response-timeout: 5s
+        connect-timeout: 30000
+        response-timeout: 20s
       loadbalancer:
         use404: true
       discovery:
