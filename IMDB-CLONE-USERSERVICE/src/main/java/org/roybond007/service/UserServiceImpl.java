@@ -56,11 +56,9 @@ public class UserServiceImpl implements UserService {
 		userEntity.setEmailId(userSignupRequestBody.getEmailId());
 		userEntity.setId("User@" + System.currentTimeMillis());
 		userEntity.setPassword(passwordEncoder.encode(userSignupRequestBody.getPassword()));
-		userEntity.setProfilePictureLink("default.jpg");
+		userEntity.setProfilePictureLink("profiles/default.jpg");
 		userEntity.setRoles(new String[] {"USER"});
 		userEntity.setUserId(userSignupRequestBody.getUserId());
-		userEntity.setChatDestination("/topic/Topic@" + System.currentTimeMillis());
-		userEntity.setSubscriptionId(System.currentTimeMillis());
 		
 		UserEntity target = null;
 		

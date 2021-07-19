@@ -17,11 +17,11 @@ import lombok.ToString;
 public class UserSigninRequestBody {
 
 	@NotNull(message = "userid cannot be empty")
-	@Size(min = 10, max = 50, message = "userid length should be within 10 to 50")
+	@Size(min = 10, max = 30, message = "userid length should be within 10 to 50")
 	private String userId;
 	
 	@NotNull(message = "password cannot be empty")
-	@Size(min = 10, max = 20, message = "password length should be between 10 to 20")
+	@Size(min = 10, message = "password length should be above 10")
 	private String password;
 	
 }

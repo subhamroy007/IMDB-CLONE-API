@@ -60,6 +60,28 @@ spring:
             maxSize: 1KB
         - SetPath=/user/managment/followrequest
         uri: lb://imdb-clone-userservice
+      - id: MOVIE-UPLOAD-ROUTE
+        predicates:
+        - Path=/movie/upload
+        - Method=POST
+        filters:
+        - CustomTokenValidationFilterFactory
+        - CustomAdminRoleVerificationFactory
+        - name: RequestSize
+          args:
+            maxSize: 230MB
+        - SetPath=/movie/managment/upload
+        uri: lb://imdb-clone-movieservice
+      - id: MOVIE-INFO-ROUTE
+        predicates:
+        - Path=/movie/info
+        - Method=GET
+        - Query=movieId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/info
+        uri: lb://imdb-clone-movieservice
+
 
           
 discovery:

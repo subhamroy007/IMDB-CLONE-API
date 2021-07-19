@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.WriteResultChecking;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -17,7 +16,6 @@ import com.mongodb.client.MongoClients;
 
 @Configuration
 public class CustomMongoDataBaseConfiguration extends AbstractMongoClientConfiguration{
-
 	@Override
 	protected String getDatabaseName() {
 		
