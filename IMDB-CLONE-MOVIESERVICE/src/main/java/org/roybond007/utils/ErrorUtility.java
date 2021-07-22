@@ -11,6 +11,7 @@ public class ErrorUtility {
 	public static final String MOVIE_UPLOAD_FAILED_MSG = "UNABLE TO UPLOAD MOVIE";
 	public static final String MOVIE_INFO_NOT_FOUND_MSG = "MOVIE INFO NOT FOUND";
     public static final String CONTENT_UPLOAD_FAILED_MSG = "CANNOT UPLOAD CONTENT";
+    public static final String REACTION_UPDATE_FAILED_MSG = "CANNOT UPDATE REACTION";
 	
 	
 }

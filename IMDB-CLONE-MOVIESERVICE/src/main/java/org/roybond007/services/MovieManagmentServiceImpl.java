@@ -12,6 +12,7 @@ import org.roybond007.exceptions.MovieUploadFailedException;
 import org.roybond007.exceptions.ReviewUploadFailedException;
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.ReactUploadResponseBody;
 import org.roybond007.model.dto.ReplyUploadResponseBody;
 import org.roybond007.model.dto.ReviewUploadRequestBody;
 import org.roybond007.model.dto.ReviewUploadResponseBody;
@@ -202,6 +203,18 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		replyEntityRepository.uploadReplyToReview(target);
 
 		return new ReplyUploadResponseBody(userId, reviewId, target.getContent(), target.getTimestamp());
+	}
+
+	@Override
+	public ReactUploadResponseBody updateReviewReact(String userId, String reviewId) {
+		ReactUploadResponseBody reactUploadResponseBody = reviewEntityRepository.uploadReacToReview(userId, reviewId);
+		return reactUploadResponseBody;
+	}
+
+	@Override
+	public ReactUploadResponseBody updateReplyReact(String userId, String replyId) {
+		ReactUploadResponseBody reactUploadResponseBody = replyEntityRepository.uploadReacToReply(userId, replyId);
+		return reactUploadResponseBody;
 	}
 
 }

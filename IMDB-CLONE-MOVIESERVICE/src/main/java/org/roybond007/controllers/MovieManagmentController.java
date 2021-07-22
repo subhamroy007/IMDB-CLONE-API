@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import org.roybond007.exceptions.CustomValidationException;
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.ReactUploadResponseBody;
 import org.roybond007.model.dto.ReplyUploadResponseBody;
 import org.roybond007.model.dto.ReviewUploadRequestBody;
 import org.roybond007.model.dto.ReviewUploadResponseBody;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -108,6 +110,30 @@ public class MovieManagmentController {
 
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(replyUploadResponseBody);
+	}
+
+
+	@PutMapping(value = "/review/react", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?> updateReviewReact(@RequestParam(value = "reviewId") String reviewId,
+		HttpServletRequest request){
+
+		String userId = request.getUserPrincipal().getName();
+		
+		ReactUploadResponseBody reactUploadResponseBody = movieManagmentService.updateReviewReact(userId, reviewId);
+
+		return ResponseEntity.ok(reactUploadResponseBody);
+	}
+
+
+	@PutMapping(value = "/reply/react", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?> updateReplyReact(@RequestParam(value = "replyId") String replyId,
+		HttpServletRequest request){
+
+		String userId = request.getUserPrincipal().getName();
+		
+		ReactUploadResponseBody reactUploadResponseBody = movieManagmentService.updateReplyReact(userId, replyId);
+
+		return ResponseEntity.ok(reactUploadResponseBody);
 	}
 
 }
