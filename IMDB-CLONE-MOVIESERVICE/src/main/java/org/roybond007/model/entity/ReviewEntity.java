@@ -32,7 +32,7 @@ public class ReviewEntity {
 	private long noOfLikes;
 	private long noOfReplies;
 	private List<EntityReferenceWithTimestamp> likeList;
-	private List<String> replyList;
+	private List<EntityReferenceWithTimestamp> replyList;
 	
 	@Version
 	private long version;

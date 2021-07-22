@@ -12,11 +12,14 @@ import org.roybond007.exceptions.MovieUploadFailedException;
 import org.roybond007.exceptions.ReviewUploadFailedException;
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.ReplyUploadResponseBody;
 import org.roybond007.model.dto.ReviewUploadRequestBody;
 import org.roybond007.model.dto.ReviewUploadResponseBody;
 import org.roybond007.model.entity.MovieEntity;
+import org.roybond007.model.entity.ReplyEntity;
 import org.roybond007.model.entity.ReviewEntity;
 import org.roybond007.repositories.MovieEntityRepository;
+import org.roybond007.repositories.ReplyEntityRepository;
 import org.roybond007.repositories.ReviewEntityRepository;
 import org.roybond007.utils.ErrorUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +36,14 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 
 	private final ReviewEntityRepository reviewEntityRepository;
 
+	private final ReplyEntityRepository replyEntityRepository;
+
 	@Autowired
 	public MovieManagmentServiceImpl(MovieEntityRepository movieEntityRepository,
-		ReviewEntityRepository reviewEntityRepository) {
+		ReviewEntityRepository reviewEntityRepository, ReplyEntityRepository replyEntityRepository) {
 		this.movieEntityRepository = movieEntityRepository;
 		this.reviewEntityRepository = reviewEntityRepository;
+		this.replyEntityRepository = replyEntityRepository;
 	}
 
 	@Override
@@ -162,13 +168,40 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		} catch (DataAccessException e) {
 			System.err.println(e.getLocalizedMessage());
 			throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-				ErrorUtility.REVIEW_UPLOAD_FAILED_MSG);
+				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
 		}
 		
 		reviewEntityRepository.uploadReviewToUser(target);
 		reviewEntityRepository.uploadReviewToMovie(target);
 
 		return new ReviewUploadResponseBody(userId, movieId, target.getContent(), target.getTimestamp());
+	}
+
+	@Override
+	public ReplyUploadResponseBody uploadReply(String userId, String reviewId,
+			ReviewUploadRequestBody reviewUploadRequestBody) {
+		
+		ReplyEntity replyEntity = new ReplyEntity();
+		replyEntity.setContent(reviewUploadRequestBody.getContent());
+		replyEntity.setId("Reply@" + System.currentTimeMillis());
+		replyEntity.setLikeList(new ArrayList<>());
+		replyEntity.setReviewId(reviewId);
+		replyEntity.setTimestamp(System.currentTimeMillis());
+		replyEntity.setUserId(userId);
+		
+		ReplyEntity target = null;
+
+		try {
+			target = replyEntityRepository.save(replyEntity);
+		} catch (DataAccessException e) {
+			System.err.println(e.getLocalizedMessage());
+			throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE, 
+				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+		}
+
+		replyEntityRepository.uploadReplyToReview(target);
+
+		return new ReplyUploadResponseBody(userId, reviewId, target.getContent(), target.getTimestamp());
 	}
 
 }

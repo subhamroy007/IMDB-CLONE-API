@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import org.roybond007.exceptions.CustomValidationException;
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.ReplyUploadResponseBody;
 import org.roybond007.model.dto.ReviewUploadRequestBody;
 import org.roybond007.model.dto.ReviewUploadResponseBody;
 import org.roybond007.services.MovieManagmentService;
@@ -70,7 +71,7 @@ public class MovieManagmentController {
 			});
 			throw new CustomValidationException(bindingResult.getFieldErrors()
 					, ErrorUtility.VALIDATION_FAILED_CODE
-					, ErrorUtility.REVIEW_UPLOAD_FAILED_MSG);
+					, ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
 		}
 
 		String userId = request.getUserPrincipal().getName();
@@ -79,6 +80,34 @@ public class MovieManagmentController {
 			movieManagmentService.uploadReview(userId, movieId, reviewUploadRequestBody);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(reviewUploadResponseBody);
+	}
+
+
+	@PostMapping(value = "/reply", 
+			consumes = {MediaType.APPLICATION_JSON_VALUE}, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?>uploadMovieReply(@Valid @RequestBody(required = true) 
+		ReviewUploadRequestBody reviewUploadRequestBody,
+		BindingResult bindingResult, @RequestParam(value = "reviewId") String reviewId,
+		HttpServletRequest request){
+
+		if(bindingResult.hasErrors()) {
+			System.err.println("something went wrong when validating user signup request body");
+			bindingResult.getFieldErrors().forEach(error -> {
+				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
+			});
+			throw new CustomValidationException(bindingResult.getFieldErrors()
+					, ErrorUtility.VALIDATION_FAILED_CODE
+					, ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+		}
+
+		String userId = request.getUserPrincipal().getName();		
+
+		ReplyUploadResponseBody replyUploadResponseBody = movieManagmentService.uploadReply(userId, reviewId, reviewUploadRequestBody);		
+
+
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(replyUploadResponseBody);
 	}
 
 }

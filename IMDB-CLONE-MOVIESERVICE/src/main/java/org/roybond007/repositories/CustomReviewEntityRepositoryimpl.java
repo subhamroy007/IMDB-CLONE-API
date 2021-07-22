@@ -53,12 +53,12 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
 
             if(!updateResult.wasAcknowledged() || (updateResult.getMatchedCount() != 1))
                 throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                    ErrorUtility.REVIEW_UPLOAD_FAILED_MSG);
+                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
 
         } catch (DataAccessException e) {
             System.err.println(e.getLocalizedMessage());
             throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                    ErrorUtility.REVIEW_UPLOAD_FAILED_MSG);
+                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
         }
         
     }
@@ -86,12 +86,12 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
 
             if(!updateResult.wasAcknowledged() || (updateResult.getMatchedCount() != 1))
                 throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                    ErrorUtility.REVIEW_UPLOAD_FAILED_MSG);
+                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
 
         } catch (DataAccessException e) {
             System.err.println(e.getLocalizedMessage());
             throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                    ErrorUtility.REVIEW_UPLOAD_FAILED_MSG);
+                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
         }
 
     }

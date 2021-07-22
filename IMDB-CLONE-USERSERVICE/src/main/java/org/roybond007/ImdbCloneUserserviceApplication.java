@@ -140,7 +140,11 @@ public class ImdbCloneUserserviceApplication implements CommandLineRunner{
 																							JsonSchemaProperty.int64("timestamp")
 																				)),
 																JsonSchemaProperty.array("reviewList")
-																	.items(JsonSchemaObject.string()),
+																	.items(JsonSchemaObject.object()
+																	.required("_id", "timestamp")
+																	.properties(JsonSchemaProperty.string("_id"),
+																				JsonSchemaProperty.int64("timestamp")
+																	)),
 																JsonSchemaProperty.array("wishList")
 																	.items(JsonSchemaObject.object()
 																				.required("_id", "timestamp")
