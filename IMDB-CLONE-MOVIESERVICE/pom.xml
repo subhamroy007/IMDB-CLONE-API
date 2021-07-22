@@ -14,7 +14,7 @@
 	<name>IMDB-CLONE-MOVIESERVICE</name>
 	<description>IMDB-CLONE-MOVIESERVICE</description>
 	<properties>
-		<java.version>13</java.version>
+		<java.version>16</java.version>
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
 	</properties>
 	<dependencies>
