@@ -9,11 +9,15 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 import org.roybond007.exceptions.MovieUploadFailedException;
+import org.roybond007.exceptions.ReviewUploadFailedException;
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.ReviewUploadRequestBody;
+import org.roybond007.model.dto.ReviewUploadResponseBody;
 import org.roybond007.model.entity.MovieEntity;
-import org.roybond007.model.helper.RatingReference;
+import org.roybond007.model.entity.ReviewEntity;
 import org.roybond007.repositories.MovieEntityRepository;
+import org.roybond007.repositories.ReviewEntityRepository;
 import org.roybond007.utils.ErrorUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -22,15 +26,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
-
 @Service
 public class MovieManagmentServiceImpl implements MovieManagmentService {
 
 	private final MovieEntityRepository movieEntityRepository;
 
+	private final ReviewEntityRepository reviewEntityRepository;
+
 	@Autowired
-	public MovieManagmentServiceImpl(MovieEntityRepository movieEntityRepository) {
+	public MovieManagmentServiceImpl(MovieEntityRepository movieEntityRepository,
+		ReviewEntityRepository reviewEntityRepository) {
 		this.movieEntityRepository = movieEntityRepository;
+		this.reviewEntityRepository = reviewEntityRepository;
 	}
 
 	@Override
@@ -64,8 +71,8 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		movieEntity.setNoOfReviews(0);
 		movieEntity.setTimestamp(System.currentTimeMillis());
 		movieEntity.setTitle(movieUploadRequestBody.getTitle());
-		movieEntity.setRatingList(new ArrayList<RatingReference>());
-		movieEntity.setReviewList(new ArrayList<String>());
+		movieEntity.setRatingList(new ArrayList<>());
+		movieEntity.setReviewList(new ArrayList<>());
 		movieEntity.setPosterLink(savePoster(movieUploadRequestBody.getPoster()));
 		movieEntity.setTrailerLink(saveTrailer(movieUploadRequestBody.getTrailer()));
 
@@ -133,6 +140,35 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		}
 
 		return "posters/" + posterName;
+	}
+
+	@Override
+	public ReviewUploadResponseBody uploadReview(String userId, String movieId,
+			ReviewUploadRequestBody reviewUploadRequestBody) {
+		
+		ReviewEntity reviewEntity = new ReviewEntity();
+		reviewEntity.setContent(reviewUploadRequestBody.getContent());
+		reviewEntity.setId("Review@" + System.currentTimeMillis());
+		reviewEntity.setLikeList(new ArrayList<>());
+		reviewEntity.setMovieId(movieId);
+		reviewEntity.setReplyList(new ArrayList<>());
+		reviewEntity.setTimestamp(System.currentTimeMillis());
+		reviewEntity.setUserId(userId);
+		
+		ReviewEntity target = null;
+		
+		try {
+			target = reviewEntityRepository.save(reviewEntity);			
+		} catch (DataAccessException e) {
+			System.err.println(e.getLocalizedMessage());
+			throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
+				ErrorUtility.REVIEW_UPLOAD_FAILED_MSG);
+		}
+		
+		reviewEntityRepository.uploadReviewToUser(target);
+		reviewEntityRepository.uploadReviewToMovie(target);
+
+		return new ReviewUploadResponseBody(userId, movieId, target.getContent(), target.getTimestamp());
 	}
 
 }

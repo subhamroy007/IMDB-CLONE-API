@@ -59,5 +59,4 @@ public class MovieDataFetchServiceImpl implements MovieDataFetchService {
 		
 		return movieInfoResponseBody;
 	}
-
 }

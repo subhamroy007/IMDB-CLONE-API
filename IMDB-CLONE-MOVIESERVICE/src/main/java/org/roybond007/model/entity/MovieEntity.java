@@ -2,6 +2,7 @@ package org.roybond007.model.entity;
 
 import java.util.List;
 
+import org.roybond007.model.helper.EntityReferenceWithTimestamp;
 import org.roybond007.model.helper.RatingReference;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
@@ -36,7 +37,7 @@ public class MovieEntity {
 	private double avgRating;
 	private String genres;
 	private List<RatingReference> ratingList;
-	private List<String> reviewList;
+	private List<EntityReferenceWithTimestamp> reviewList;
 
 	@Version
 	private long version;

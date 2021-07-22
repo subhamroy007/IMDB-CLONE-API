@@ -1,10 +1,13 @@
 package org.roybond007.controllers;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.roybond007.exceptions.CustomValidationException;
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.ReviewUploadRequestBody;
+import org.roybond007.model.dto.ReviewUploadResponseBody;
 import org.roybond007.services.MovieManagmentService;
 import org.roybond007.utils.ErrorUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -50,4 +55,30 @@ public class MovieManagmentController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(movieUploadResponseBody);
 	}
 	
+	@PostMapping(value = "/review", 
+			consumes = {MediaType.APPLICATION_JSON_VALUE}, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?> uploadMovieReview(@Valid @RequestBody(required = true) 
+		ReviewUploadRequestBody reviewUploadRequestBody,
+		BindingResult bindingResult, @RequestParam(value = "movieId") String movieId,
+		HttpServletRequest request){
+
+		if(bindingResult.hasErrors()) {
+			System.err.println("something went wrong when validating user signup request body");
+			bindingResult.getFieldErrors().forEach(error -> {
+				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
+			});
+			throw new CustomValidationException(bindingResult.getFieldErrors()
+					, ErrorUtility.VALIDATION_FAILED_CODE
+					, ErrorUtility.REVIEW_UPLOAD_FAILED_MSG);
+		}
+
+		String userId = request.getUserPrincipal().getName();
+
+		ReviewUploadResponseBody reviewUploadResponseBody = 
+			movieManagmentService.uploadReview(userId, movieId, reviewUploadRequestBody);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(reviewUploadResponseBody);
+	}
+
 }

@@ -2,7 +2,6 @@ package org.roybond007.repository;
 
 import java.util.Optional;
 
-import org.roybond007.model.dto.FollowStatusResponseBody;
 import org.roybond007.model.entity.UserEntity;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
