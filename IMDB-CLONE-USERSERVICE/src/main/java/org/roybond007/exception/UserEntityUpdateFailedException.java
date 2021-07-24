@@ -2,7 +2,7 @@ package org.roybond007.exception;
 
 import java.util.HashMap;
 
-import org.roybond007.model.dto.ErrorResponseBody;
+import org.roybond007.model.helper.ErrorResponseBody;
 
 public class UserEntityUpdateFailedException extends RuntimeException {
 

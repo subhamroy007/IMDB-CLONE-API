@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.roybond007.model.dto.ErrorResponseBody;
+import org.roybond007.model.helper.ErrorResponseBody;
 import org.springframework.validation.FieldError;
 
 import lombok.Getter;

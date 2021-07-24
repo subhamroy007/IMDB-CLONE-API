@@ -3,7 +3,7 @@ package org.roybond007.exception;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.roybond007.model.dto.ErrorResponseBody;
+import org.roybond007.model.helper.ErrorResponseBody;
 
 import lombok.Getter;
 import lombok.Setter;

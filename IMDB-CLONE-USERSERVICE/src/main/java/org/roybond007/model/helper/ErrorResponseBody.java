@@ -1,4 +1,4 @@
-package org.roybond007.model.dto;
+package org.roybond007.model.helper;
 
 import java.util.Map;
 
@@ -8,14 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
 public class ErrorResponseBody {
 	
-	private final int code;
-	private final String msg;
-	private final Map<String, Object> reason;
+	private int code;
+	private String msg;
+	private Map<String, Object> reason;
 	
 }

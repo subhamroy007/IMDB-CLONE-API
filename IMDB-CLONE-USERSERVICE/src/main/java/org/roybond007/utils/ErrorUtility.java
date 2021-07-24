@@ -32,6 +32,9 @@ public class ErrorUtility {
 	public static final String SIGN_UP_FAILED_MSG = "SIGNUP FAILED";
 	public static final String SIGN_IN_FAILED_MSG = "SIGNIN FAILED";
 	public static final String FOLLOW_REQUEST_FAILED_MSG = "FOLLOW REQUEST FAILED";
+
+
+	public static final String CONTENT_LOAD_FAILED_MSG = "UNABLE TO LOAD DATA";
 	
 	
 	
