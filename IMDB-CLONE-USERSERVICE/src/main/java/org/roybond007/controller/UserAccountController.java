@@ -2,7 +2,8 @@ package org.roybond007.controller;
 
 import javax.validation.Valid;
 
-import org.roybond007.exception.CustomValidationException;
+import org.roybond007.exception.SignInFailedException;
+import org.roybond007.exception.SignUpFailedException;
 import org.roybond007.model.dto.UserAuthenticationResponseBody;
 import org.roybond007.model.dto.UserSigninRequestBody;
 import org.roybond007.model.dto.UserSignupRequestBody;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,9 +47,10 @@ public class UserAccountController {
 			result.getFieldErrors().forEach(error -> {
 				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
 			});
-			throw new CustomValidationException(result.getFieldErrors()
-					, ErrorUtility.VALIDATION_FAILED_CODE
-					, ErrorUtility.SIGN_UP_FAILED_MSG);
+			throw new 
+				SignUpFailedException(ErrorUtility.VALIDATION_FAILED_CODE, ErrorUtility.SIGN_UP_FAILED_MSG
+						, result.getFieldErrors()
+				);
 		}
 		
 		UserAuthenticationResponseBody userAuthenticationResponseBody = userService.createNewUserEntity(userSignupRequestBody);
@@ -71,9 +72,9 @@ public class UserAccountController {
 			result.getFieldErrors().forEach(error -> {
 				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
 			});
-			throw new CustomValidationException(result.getFieldErrors()
-					, ErrorUtility.VALIDATION_FAILED_CODE
-					, ErrorUtility.SIGN_IN_FAILED_MSG);
+			throw new SignInFailedException(ErrorUtility.VALIDATION_FAILED_CODE
+					, ErrorUtility.SIGN_IN_FAILED_MSG
+					, result.getFieldErrors());
 		}
 		
 		UserAuthenticationResponseBody userAuthenticationResponseBody = userService.authenticateUserEntity(signupRequestBody);

@@ -114,49 +114,55 @@ public class ImdbCloneUserserviceApplication implements CommandLineRunner{
 																JsonSchemaProperty.bool("isActive"),
 																JsonSchemaProperty.string("emailId"),
 																JsonSchemaProperty.string("profilePictureLink"),
-																JsonSchemaProperty.int64("noOfFollowers").gte(0L),
-																JsonSchemaProperty.int64("noOfFollowings").gte(0L),
-																JsonSchemaProperty.int64("noOfMovieReviewed").gte(0L),
-																JsonSchemaProperty.int64("noOfMovieRated").gte(0L),
-																JsonSchemaProperty.int64("wishListLength").gte(0L),
-																JsonSchemaProperty.int64("watchListLength").gte(0L),
+																JsonSchemaProperty.int64("noOfFollowers").gte(0),
+																JsonSchemaProperty.int64("noOfFollowings").gte(0),
+																JsonSchemaProperty.int64("noOfMovieReviewed").gte(0),
+																JsonSchemaProperty.int64("noOfMovieRated").gte(0),
+																JsonSchemaProperty.int64("wishListLength").gte(0),
+																JsonSchemaProperty.int64("watchListLength").gte(0),
 																JsonSchemaProperty.array("followerList")
 																	.items(JsonSchemaObject.object()
 																				.required("_id", "timestamp")
 																				.properties(JsonSchemaProperty.string("_id"),
 																							JsonSchemaProperty.int64("timestamp")
-																				)),
+																				)
+																	),
 																JsonSchemaProperty.array("followingList")
 																	.items(JsonSchemaObject.object()
 																				.required("_id", "timestamp")
 																				.properties(JsonSchemaProperty.string("_id"),
 																							JsonSchemaProperty.int64("timestamp")
-																				)),
+																				)
+																	),
 																JsonSchemaProperty.array("ratingList")
 																	.items(JsonSchemaObject.object()
 																				.required("_id", "rating", "timestamp")
 																				.properties(JsonSchemaProperty.string("_id"),
 																							JsonSchemaProperty.float64("rating"),
 																							JsonSchemaProperty.int64("timestamp")
-																				)),
+																				)
+																	),
 																JsonSchemaProperty.array("reviewList")
 																	.items(JsonSchemaObject.object()
-																	.required("_id", "timestamp")
-																	.properties(JsonSchemaProperty.string("_id"),
-																				JsonSchemaProperty.int64("timestamp")
-																	)),
+																				.required("_id", "timestamp")
+																				.properties(JsonSchemaProperty.string("_id")
+																						, JsonSchemaProperty.int64("timestamp")
+																				)
+																	),
 																JsonSchemaProperty.array("wishList")
 																	.items(JsonSchemaObject.object()
 																				.required("_id", "timestamp")
 																				.properties(JsonSchemaProperty.string("_id"),
 																							JsonSchemaProperty.int64("timestamp")
-																				)),
+																				)
+																	),
 																JsonSchemaProperty.array("watchList")
 																	.items(JsonSchemaObject.object()
 																				.required("_id", "timestamp")
 																				.properties(JsonSchemaProperty.string("_id"),
 																							JsonSchemaProperty.int64("timestamp")
-																				))
+																				)
+																	)
 														)
 														.description("root schema mismatch")
 													.build();
@@ -173,17 +179,51 @@ public class ImdbCloneUserserviceApplication implements CommandLineRunner{
 			mongoTemplate.indexOps(UserEntity.class)
 				.ensureIndex(
 						new Index().collation(userEntityCollation)
-						.named("userEntityUserIdIndex").on("userId", Direction.ASC)
+						.named("userEntityUserIdIndex").on("userId", Direction.DESC)
 						.unique()
 				);
 			
 			mongoTemplate.indexOps(UserEntity.class)
 				.ensureIndex(
 						new Index().collation(userEntityCollation)
-						.named("userEntityEmailIdIndex").on("emailId", Direction.ASC)
+						.named("userEntityEmailIdIndex").on("emailId", Direction.DESC)
 						.unique()
 				);
 			
+			mongoTemplate.indexOps(UserEntity.class)
+			.ensureIndex(
+					new Index().collation(userEntityCollation)
+					.named("userEntityFollowerListUserIdIndex").on("followerList._id", Direction.DESC)
+					.unique()
+			);
+			
+			mongoTemplate.indexOps(UserEntity.class)
+			.ensureIndex(
+					new Index().collation(userEntityCollation)
+					.named("userEntityFollowingListUserIdIndex").on("followingList._id", Direction.DESC)
+					.unique()
+			);
+			
+			mongoTemplate.indexOps(UserEntity.class)
+			.ensureIndex(
+					new Index().collation(userEntityCollation)
+					.named("userEntityWishListUserIdIndex").on("wishList._id", Direction.DESC)
+					.unique()
+			);
+			
+			mongoTemplate.indexOps(UserEntity.class)
+			.ensureIndex(
+					new Index().collation(userEntityCollation)
+					.named("userEntityWatchListUserIdIndex").on("watchList._id", Direction.DESC)
+					.unique()
+			);
+			
+			mongoTemplate.indexOps(UserEntity.class)
+			.ensureIndex(
+					new Index().collation(userEntityCollation)
+					.named("userEntityRatingListUserIdIndex").on("ratingList._id", Direction.DESC)
+					.unique()
+			);
 		}
 		
 	}

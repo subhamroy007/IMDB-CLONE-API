@@ -11,12 +11,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class FollowStatusResponseBody {
+public class RatingUploadResponseBody {
 
-	private String followerId;
-	private String followingId;
-	private long noOfFollowers;
-	private boolean status;
-	
+	private String userId;
+	private String movieId;
+	private long rating;
+	private long timestamp;
+	private long noOfRatings;
+	private double avgRating;
 	
 }

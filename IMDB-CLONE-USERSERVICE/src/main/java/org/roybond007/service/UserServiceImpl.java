@@ -2,10 +2,10 @@ package org.roybond007.service;
 
 import java.util.ArrayList;
 
-import org.roybond007.exception.UserCreateException;
-import org.roybond007.exception.UserVerificationException;
+import org.roybond007.exception.SignInFailedException;
+import org.roybond007.exception.SignUpFailedException;
 import org.roybond007.model.dto.UserSignupRequestBody;
-import org.roybond007.model.dto.FollowStatusResponseBody;
+import org.roybond007.model.dto.EntityListUpdatedResponseBody;
 import org.roybond007.model.dto.UserAuthenticationResponseBody;
 import org.roybond007.model.dto.UserSigninRequestBody;
 import org.roybond007.model.entity.UserEntity;
@@ -15,8 +15,9 @@ import org.roybond007.utils.JwtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -66,10 +67,10 @@ public class UserServiceImpl implements UserService {
 			target = userEntityRepository.save(userEntity);
 		} catch (IllegalArgumentException ex) {
 			System.err.println(ex.getLocalizedMessage());
-			throw new UserCreateException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.SIGN_UP_FAILED_MSG);
+			throw new SignUpFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.SIGN_UP_FAILED_MSG, null);
 		} catch (DataAccessException ex) {
 			System.err.println(ex.getLocalizedMessage());
-			throw new UserCreateException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.SIGN_UP_FAILED_MSG);
+			throw new SignUpFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.SIGN_UP_FAILED_MSG, null);
 		}
 		
 		UserDetails newUser = User.withUsername(target.getUserId())
@@ -82,7 +83,10 @@ public class UserServiceImpl implements UserService {
 							.build();
 		
 		UserAuthenticationResponseBody userAuthenticationResponseBody = 
-				new UserAuthenticationResponseBody(jwtUtility.generateToken(newUser), userSignupRequestBody.getUserId());
+				new UserAuthenticationResponseBody(jwtUtility.generateToken(newUser)
+						, userSignupRequestBody.getUserId()
+						, target.getRoles()[0].equals("ADMIN")
+				);
 		
 		return userAuthenticationResponseBody;
 	}
@@ -91,35 +95,63 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserAuthenticationResponseBody authenticateUserEntity(UserSigninRequestBody signinRequestBody) {
 		
+		UsernamePasswordAuthenticationToken result = null;
+		
 		try {
 			UsernamePasswordAuthenticationToken authenticationToken = 
 					new UsernamePasswordAuthenticationToken(signinRequestBody.getUserId(), 
 															signinRequestBody.getPassword(), 
 															new ArrayList<>());
 			
-			authenticationManager.authenticate(authenticationToken);
+			result = (UsernamePasswordAuthenticationToken)authenticationManager.authenticate(authenticationToken);
 			
-		} catch (BadCredentialsException ex) {
+		} catch (AuthenticationException ex) {
 			System.err.println(ex.getLocalizedMessage());
-			throw new UserVerificationException(ErrorUtility.CREDENTIAL_NOT_MATCH_ERROR_CODE
+			throw new SignInFailedException(ErrorUtility.CREDENTIAL_NOT_MATCH_ERROR_CODE
 												, ErrorUtility.SIGN_IN_FAILED_MSG
 												, signinRequestBody.getUserId());
 		}
-		
-		UserDetails userDetails = userDetailsService.loadUserByUsername(signinRequestBody.getUserId());
+
+		UserDetails userDetails = null;
+		try {
+			userDetails = userDetailsService.loadUserByUsername(signinRequestBody.getUserId());
+		} catch (DataAccessException e) {
+			System.err.println(e.getLocalizedMessage());
+			throw new SignInFailedException(ErrorUtility.DATA_LAYER_ERROR
+					, ErrorUtility.SIGN_IN_FAILED_MSG, null);
+		}
 		
 		UserAuthenticationResponseBody userAuthenticationResponseBody = 
-				new UserAuthenticationResponseBody(jwtUtility.generateToken(userDetails), signinRequestBody.getUserId());
+				new UserAuthenticationResponseBody(jwtUtility.generateToken(userDetails)
+						, signinRequestBody.getUserId()
+						, result.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))
+				);
 		
 		return userAuthenticationResponseBody;
 	}
 	
 	@Override
-	public FollowStatusResponseBody updateFollowStatus(String currentUserId, String targetUserId) {
+	public EntityListUpdatedResponseBody updateFollowStatus(String currentUserId, String targetUserId) {
 		
-		FollowStatusResponseBody followStatusResponseBody = userEntityRepository.updateFollowStatus(currentUserId, targetUserId);
+		EntityListUpdatedResponseBody entityListUpdatedResponseBody = userEntityRepository.updateFollowStatus(currentUserId, targetUserId);
 		
-		return followStatusResponseBody;
+		return entityListUpdatedResponseBody;
 	}
 
+	@Override
+	public EntityListUpdatedResponseBody updateWatchList(String userId, String movieId) {
+		
+		EntityListUpdatedResponseBody entityListUpdatedResponseBody = userEntityRepository.updateWatchList(userId, movieId);
+		
+		return entityListUpdatedResponseBody;
+	}
+
+	@Override
+	public EntityListUpdatedResponseBody updateWishList(String userId, String movieId) {
+		
+		EntityListUpdatedResponseBody entityListUpdatedResponseBody = userEntityRepository.updateWishList(userId, movieId);
+		
+		return entityListUpdatedResponseBody;
+	}
+	
 }

@@ -77,7 +77,7 @@ public class UserDataFetchServiceImpl implements UserDataFetchService {
 		}
 		
 		moviePageObject.setId(pageId);
-		moviePageObject.setSize(wishListPageSize);
+		moviePageObject.setSize(watchListPageSize);
 		if(moviePageObject.getResult() == null) {
 			moviePageObject.setResult(new ArrayList<>());
 		}
@@ -105,7 +105,7 @@ public class UserDataFetchServiceImpl implements UserDataFetchService {
 		}
 		
 		moviePageObject.setId(pageId);
-		moviePageObject.setSize(wishListPageSize);
+		moviePageObject.setSize(ratingListPageSize);
 		if(moviePageObject.getResult() == null) {
 			moviePageObject.setResult(new ArrayList<>());
 		}

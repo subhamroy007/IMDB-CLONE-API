@@ -24,7 +24,7 @@ public class MovieInfoResponseBody {
 	private long noOfRatings;
 	private double avgRating;
 	private String genres;
-	private double userRating;
+	private long userRating;
 	
 	
 }

@@ -5,7 +5,7 @@ import org.roybond007.model.dto.UserSignupRequestBody;
 
 import javax.validation.Valid;
 
-import org.roybond007.model.dto.FollowStatusResponseBody;
+import org.roybond007.model.dto.EntityListUpdatedResponseBody;
 import org.roybond007.model.dto.UserAuthenticationResponseBody;
 import org.roybond007.model.dto.UserSigninRequestBody;
 
@@ -15,6 +15,10 @@ public interface UserService {
 
 	UserAuthenticationResponseBody authenticateUserEntity(UserSigninRequestBody signinRequestBody);
 
-	FollowStatusResponseBody updateFollowStatus(String currentUserId, String targetUserId);
+	EntityListUpdatedResponseBody updateFollowStatus(String currentUserId, String targetUserId);
+
+	EntityListUpdatedResponseBody updateWatchList(String userId, String movieId);
+
+	EntityListUpdatedResponseBody updateWishList(String userId, String movieId);
 
 }

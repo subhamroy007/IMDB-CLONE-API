@@ -1,25 +1,27 @@
-package org.roybond007.exceptions;
+package org.roybond007.exception;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.roybond007.model.dto.ErrorResponseBody;
+import org.roybond007.model.helper.ErrorResponseBody;
 import org.roybond007.utils.ErrorUtility;
 import org.springframework.validation.FieldError;
 
-public class MovieUploadFailedException extends CustomException {
+public class SignUpFailedException extends CustomException {
 
-	private static final long serialVersionUID = -1798424549687742247L;
-	
-	public MovieUploadFailedException(int errorCode, String errorMsg, Object reason) {
+	private static final long serialVersionUID = 4529946766570846339L;
+
+	public SignUpFailedException(int errorCode, String errorMsg, Object reason) {
 		super(errorCode, errorMsg, reason);
+		
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public ErrorResponseBody getErrorResponseBody() {
 		
-		HashMap<String, Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		
 		if(errorCode == ErrorUtility.VALIDATION_FAILED_CODE) {
 			
@@ -28,12 +30,14 @@ public class MovieUploadFailedException extends CustomException {
 			for (FieldError fieldError : fieldErrors) {
 				map.put(fieldError.getField(), fieldError.getDefaultMessage());
 			}
-		}else if(errorCode == ErrorUtility.DATA_LAYER_ERROR_CODE || errorCode == ErrorUtility.FILE_SYSTEM_ERROR_CODE) {
-			//body not needed
+			
+		}else if(errorCode == ErrorUtility.DATA_LAYER_ERROR) {
+			//no body needed
 		}
 		
 		ErrorResponseBody errorResponseBody = new ErrorResponseBody(errorCode, errorMsg, map);
 		
 		return errorResponseBody;
 	}
+
 }

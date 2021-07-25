@@ -1,7 +1,5 @@
 package org.roybond007.model.helper;
 
-import org.springframework.data.annotation.TypeAlias;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,18 +8,16 @@ import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Getter
+@Setter
 @ToString
-@TypeAlias("ratingReference")
-public class RatingReference {
+public class ReplyDataFetchObject {
 
 	private String id;
-	
-	private long rating;
-	
 	private long timestamp;
-	
-	
+	private String content;
+	private EntityReferenceWithPicture userObject;
+	private long noOfLikes;
+	private boolean userReact;
 	
 }

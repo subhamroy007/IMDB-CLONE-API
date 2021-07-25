@@ -1,4 +1,4 @@
-package org.roybond007.model.dto;
+package org.roybond007.model.helper;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +11,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserAuthenticationResponseBody {
+public class EntityReferenceWithPicture {
 
-	private String token;
-	private String userId;
-	private boolean isAdmin;
+	private String id;
+	private String profilePictureLink;
 	
 }

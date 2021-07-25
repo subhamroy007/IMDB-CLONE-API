@@ -14,10 +14,8 @@ import com.mongodb.client.result.UpdateResult;
 import static org.springframework.data.mongodb.core.query.Criteria.*;
 
 import java.util.Optional;
-
-import org.roybond007.exception.UserEntityNotFoundException;
 import org.roybond007.exception.UserEntityUpdateFailedException;
-import org.roybond007.model.dto.FollowStatusResponseBody;
+import org.roybond007.model.dto.EntityListUpdatedResponseBody;
 import org.roybond007.model.entity.UserEntity;
 import org.roybond007.model.helper.EntityReferenceWithTimestamp;
 import org.roybond007.utils.ErrorUtility;
@@ -33,11 +31,11 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 	}
 
 	@Override
-	public FollowStatusResponseBody updateFollowStatus(String currentUserId, String targetUserId) {
+	public EntityListUpdatedResponseBody updateFollowStatus(String currentUserId, String targetUserId) {
 		
-		FollowStatusResponseBody followStatusResponseBody = new FollowStatusResponseBody();
-		followStatusResponseBody.setFollowerId(currentUserId);
-		followStatusResponseBody.setFollowingId(targetUserId);
+		EntityListUpdatedResponseBody entityListUpdatedResponseBody = new EntityListUpdatedResponseBody();
+		entityListUpdatedResponseBody.setSourceId(currentUserId);
+		entityListUpdatedResponseBody.setTargetId(targetUserId);
 		
 		Query fetchCurrentUserEntityQuery = new Query(where("userId").is(currentUserId));
 		
@@ -65,23 +63,26 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 			
 		}catch (IllegalArgumentException ex) {
 			System.err.println(ex.getLocalizedMessage());
-			throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
+			throw new 
+				UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 			
 		}catch (DataAccessException ex) {
 			System.err.println(ex.getLocalizedMessage());
-			throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
+			throw new 
+				UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 		}
 		
 		if(result.isEmpty()) { //this conditional block runs if the current provided user does not exist
 			System.err.println("userid " + currentUserId + " not fouund");
-			throw new UserEntityNotFoundException(ErrorUtility.ENTITY_NOT_FOUND, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, currentUserId);
+			throw new 
+				UserEntityUpdateFailedException(ErrorUtility.ENTITY_NOT_FOUND, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, currentUserId);
 		}
 		
 		UserEntity target = result.get();
 		
 		if(target.getFollowingList() == null || target.getFollowingList().size() == 0) { //this conditional block runs only when current user does not follow target user
 			
-			followStatusResponseBody.setStatus(true);
+			entityListUpdatedResponseBody.setStatus(true);
 			
 			long timestamp = System.currentTimeMillis();
 			
@@ -110,12 +111,14 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 					.first();
 				if(!currentUserEntityFollowStatusUpdateResult.wasAcknowledged()) {
 					System.err.println("database acknoledgement failed in follow request");
-					throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
+					throw new 
+						UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 				}
 				
 			}catch (DataAccessException ex) {
 				System.err.println(ex.getLocalizedMessage());
-				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 			}
 			
 			
@@ -129,20 +132,22 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 				
 				if(targetUserEntityFollowStatusUserEntity.isEmpty()) {
 					System.err.println("userid " + targetUserId + " not found");
-					throw new UserEntityNotFoundException(ErrorUtility.ENTITY_NOT_FOUND, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, targetUserId);
+					throw new 
+						UserEntityUpdateFailedException(ErrorUtility.ENTITY_NOT_FOUND, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, targetUserId);
 				}
 				
-				followStatusResponseBody.setNoOfFollowers(targetUserEntityFollowStatusUserEntity.get().getNoOfFollowers());
+				entityListUpdatedResponseBody.setSize(targetUserEntityFollowStatusUserEntity.get().getNoOfFollowers());
 				
 			}catch (DataAccessException ex) {
 				System.err.println(ex.getLocalizedMessage());
-				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 			}
 			
 			
 		}else {	//this block runs when the current user does follow target user
 			
-			followStatusResponseBody.setStatus(false);
+			entityListUpdatedResponseBody.setStatus(false);
 			
 			EntityReferenceWithTimestamp following = target.getFollowingList().get(0);
 			
@@ -167,12 +172,14 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 					.first();
 				if(!currentUserEntityFollowStatusUpdateResult.wasAcknowledged()) {
 					System.err.println("database acknoledgement failed in follow request");
-					throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
+					throw new 
+						UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 				}
 				
 			}catch (DataAccessException ex) {
 				System.err.println(ex.getLocalizedMessage());
-				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 			}
 			
 			
@@ -184,16 +191,207 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 					.withOptions(FindAndModifyOptions.options().returnNew(true).upsert(false))
 					.findAndModify();
 				
-				followStatusResponseBody.setNoOfFollowers(targetUserEntityFollowStatusUserEntity.get().getNoOfFollowers());
+				entityListUpdatedResponseBody.setSize(targetUserEntityFollowStatusUserEntity.get().getNoOfFollowers());
 				
 			}catch (DataAccessException ex) {
 				System.err.println(ex.getLocalizedMessage());
-				throw new UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG);
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 			}
 			
 		}
 		
-		return followStatusResponseBody;
+		return entityListUpdatedResponseBody;
+	}
+
+	@Override
+	public EntityListUpdatedResponseBody updateWishList(String userId, String movieId) {
+		
+		EntityListUpdatedResponseBody entityListUpdatedResponseBody = new EntityListUpdatedResponseBody();
+		entityListUpdatedResponseBody.setSourceId(userId);
+		entityListUpdatedResponseBody.setTargetId(movieId);
+		
+		
+		Query userWishListQuery = new Query(where("userId").is(userId));
+		
+		userWishListQuery
+			.fields()
+			.include("_id", "userId", "wishListLength")
+			.elemMatch("wishList", where("_id").is(movieId));
+		
+		Optional<UserEntity> result = null;
+		
+		try {
+			result = mongoTemplate
+				.query(UserEntity.class)
+				.as(UserEntity.class)
+				.matching(userWishListQuery)
+				.first();
+		} catch (DataAccessException e) {
+			System.err.println(e.getLocalizedMessage());
+			throw new 
+				UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.WISHLIST_UPDATE_FAILED_MSG, null);
+		}
+		
+		if(result.isEmpty()) {
+			System.err.println("userId " + userId + " does not exists");
+			throw new 
+				UserEntityUpdateFailedException(ErrorUtility.ENTITY_NOT_FOUND, ErrorUtility.WISHLIST_UPDATE_FAILED_MSG, userId);
+		}
+		
+		UserEntity userEntity = result.get();
+		
+		if(userEntity.getWishList() == null || userEntity.getWishList().size() == 0) {
+			
+			EntityReferenceWithTimestamp wishListRef = new EntityReferenceWithTimestamp(movieId, System.currentTimeMillis());
+			
+			Update userWishListUpdate = new Update()
+												.inc("wishListLength", 1)
+												.push("wishList")
+												.sort(Sort.by("timestamp").descending())
+												.each(wishListRef);
+			
+			try {
+				Optional<UserEntity> target = mongoTemplate
+												.update(UserEntity.class)
+												.matching(userWishListQuery)
+												.apply(userWishListUpdate)
+												.withOptions(FindAndModifyOptions.options().returnNew(true))
+												.findAndModify();
+
+				entityListUpdatedResponseBody.setStatus(true);
+				entityListUpdatedResponseBody.setSize(target.get().getWishListLength());
+			
+			} catch (DataAccessException e) {
+				System.err.println(e.getLocalizedMessage());
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.WISHLIST_UPDATE_FAILED_MSG, null);
+			}
+			
+			
+		}else {
+			
+			EntityReferenceWithTimestamp wishListRef = userEntity.getWishList().get(0);
+			
+			Update userWishListUpdate = new Update()
+												.inc("wishListLength", -1)
+												.pull("wishList", wishListRef);
+			
+			try {
+				
+				Optional<UserEntity> target = mongoTemplate
+												.update(UserEntity.class)
+												.matching(userWishListQuery)
+												.apply(userWishListUpdate)
+												.withOptions(FindAndModifyOptions.options().returnNew(true))
+												.findAndModify();
+				
+				entityListUpdatedResponseBody.setStatus(false);
+				entityListUpdatedResponseBody.setSize(target.get().getWishListLength());
+				
+			} catch (DataAccessException e) {
+				System.err.println(e.getLocalizedMessage());
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.WISHLIST_UPDATE_FAILED_MSG, null);
+			}
+			
+		}
+		
+		return entityListUpdatedResponseBody;
 	}
 	
+	@Override
+	public EntityListUpdatedResponseBody updateWatchList(String userId, String movieId) {
+		EntityListUpdatedResponseBody entityListUpdatedResponseBody = new EntityListUpdatedResponseBody();
+		entityListUpdatedResponseBody.setSourceId(userId);
+		entityListUpdatedResponseBody.setTargetId(movieId);
+		
+		
+		Query userWishListQuery = new Query(where("userId").is(userId));
+		
+		userWishListQuery
+			.fields()
+			.include("_id", "userId", "watchListLength")
+			.elemMatch("watchList", where("_id").is(movieId));
+		
+		Optional<UserEntity> result = null;
+		
+		try {
+			result = mongoTemplate
+				.query(UserEntity.class)
+				.as(UserEntity.class)
+				.matching(userWishListQuery)
+				.first();
+		} catch (DataAccessException e) {
+			System.err.println(e.getLocalizedMessage());
+			throw new 
+				UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.WISHLIST_UPDATE_FAILED_MSG, null);
+		}
+		
+		if(result.isEmpty()) {
+			System.err.println("userId " + userId + " does not exists");
+			throw new 
+				UserEntityUpdateFailedException(ErrorUtility.ENTITY_NOT_FOUND, ErrorUtility.WISHLIST_UPDATE_FAILED_MSG, userId);
+		}
+		
+		UserEntity userEntity = result.get();
+		
+		if(userEntity.getWishList() == null || userEntity.getWishList().size() == 0) {
+			
+			EntityReferenceWithTimestamp wishListRef = new EntityReferenceWithTimestamp(movieId, System.currentTimeMillis());
+			
+			Update userWishListUpdate = new Update()
+												.inc("watchListLength", 1)
+												.push("watchList")
+												.sort(Sort.by("timestamp").descending())
+												.each(wishListRef);
+			
+			try {
+				Optional<UserEntity> target = mongoTemplate
+												.update(UserEntity.class)
+												.matching(userWishListQuery)
+												.apply(userWishListUpdate)
+												.withOptions(FindAndModifyOptions.options().returnNew(true))
+												.findAndModify();
+
+				entityListUpdatedResponseBody.setStatus(true);
+				entityListUpdatedResponseBody.setSize(target.get().getWishListLength());
+			
+			} catch (DataAccessException e) {
+				System.err.println(e.getLocalizedMessage());
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.WISHLIST_UPDATE_FAILED_MSG, null);
+			}
+			
+			
+		}else {
+			
+			EntityReferenceWithTimestamp wishListRef = userEntity.getWishList().get(0);
+			
+			Update userWishListUpdate = new Update()
+												.inc("watchListLength", -1)
+												.pull("watchList", wishListRef);
+			
+			try {
+				
+				Optional<UserEntity> target = mongoTemplate
+												.update(UserEntity.class)
+												.matching(userWishListQuery)
+												.apply(userWishListUpdate)
+												.withOptions(FindAndModifyOptions.options().returnNew(true))
+												.findAndModify();
+				
+				entityListUpdatedResponseBody.setStatus(false);
+				entityListUpdatedResponseBody.setSize(target.get().getWishListLength());
+				
+			} catch (DataAccessException e) {
+				System.err.println(e.getLocalizedMessage());
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.WISHLIST_UPDATE_FAILED_MSG, null);
+			}
+			
+		}
+		
+		return entityListUpdatedResponseBody;
+	}
 }

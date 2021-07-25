@@ -2,10 +2,14 @@ package org.roybond007.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
-import org.roybond007.exceptions.CustomValidationException;
+import org.roybond007.exceptions.EntityUpdateFailedException;
+import org.roybond007.exceptions.MovieUploadFailedException;
+import org.roybond007.exceptions.ReactionUploadFailedException;
+import org.roybond007.exceptions.ReviewUploadFailedException;
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.RatingUploadRequestBody;
+import org.roybond007.model.dto.RatingUploadResponseBody;
 import org.roybond007.model.dto.ReactUploadResponseBody;
 import org.roybond007.model.dto.ReplyUploadResponseBody;
 import org.roybond007.model.dto.ReviewUploadRequestBody;
@@ -36,20 +40,21 @@ public class MovieManagmentController {
 		this.movieManagmentService = movieManagmentService;
 	}
 	
-	@PostMapping(value = "/upload", 
+	@PostMapping(value = "/upload",
 			consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, 
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<?> uploadMovie(@Valid @ModelAttribute MovieUploadRequestBody movieUploadRequestBody, 
 			BindingResult bindingResult){
 		
 		if(bindingResult.hasErrors()) {
-			System.err.println("something went wrong when validating user signup request body");
+			System.err.println("something went wrong when validating movie upload request body");
 			bindingResult.getFieldErrors().forEach(error -> {
 				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
 			});
-			throw new CustomValidationException(bindingResult.getFieldErrors()
-					, ErrorUtility.VALIDATION_FAILED_CODE
-					, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG);
+			throw new MovieUploadFailedException(ErrorUtility.VALIDATION_FAILED_CODE
+					, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG
+					, bindingResult.getFieldErrors()
+			);
 		}
 		
 		MovieUploadResponseBody movieUploadResponseBody = movieManagmentService.uploadMovie(movieUploadRequestBody);
@@ -67,13 +72,14 @@ public class MovieManagmentController {
 		HttpServletRequest request){
 
 		if(bindingResult.hasErrors()) {
-			System.err.println("something went wrong when validating user signup request body");
+			System.err.println("something went wrong when validating review upload request body");
 			bindingResult.getFieldErrors().forEach(error -> {
 				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
 			});
-			throw new CustomValidationException(bindingResult.getFieldErrors()
-					, ErrorUtility.VALIDATION_FAILED_CODE
-					, ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+			throw new ReactionUploadFailedException(ErrorUtility.VALIDATION_FAILED_CODE
+					, ErrorUtility.CONTENT_UPLOAD_FAILED_MSG
+					, bindingResult.getFieldErrors()
+			);
 		}
 
 		String userId = request.getUserPrincipal().getName();
@@ -94,13 +100,14 @@ public class MovieManagmentController {
 		HttpServletRequest request){
 
 		if(bindingResult.hasErrors()) {
-			System.err.println("something went wrong when validating user signup request body");
+			System.err.println("something went wrong when validating review upload request body");
 			bindingResult.getFieldErrors().forEach(error -> {
 				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
 			});
-			throw new CustomValidationException(bindingResult.getFieldErrors()
-					, ErrorUtility.VALIDATION_FAILED_CODE
-					, ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+			throw new ReviewUploadFailedException(ErrorUtility.VALIDATION_FAILED_CODE
+					, ErrorUtility.CONTENT_UPLOAD_FAILED_MSG
+					, bindingResult.getFieldErrors()
+			);
 		}
 
 		String userId = request.getUserPrincipal().getName();		
@@ -136,4 +143,31 @@ public class MovieManagmentController {
 		return ResponseEntity.ok(reactUploadResponseBody);
 	}
 
+	@PutMapping(value = "/rating", 
+			consumes = {MediaType.APPLICATION_JSON_VALUE}, 
+			produces = {MediaType.APPLICATION_JSON_VALUE}
+	)
+	public ResponseEntity<?> uploadRating(@Valid @RequestBody(required = true) RatingUploadRequestBody ratingUploadRequestBody,
+			BindingResult bindingResult, HttpServletRequest request,
+			@RequestParam(value = "movieId", required = true) String movieId){
+		
+		if(bindingResult.hasErrors()) {
+			System.err.println("something went wrong when validating rating upload request body");
+			bindingResult.getFieldErrors().forEach(error -> {
+				System.err.println(error.getField() + "-->" + error.getDefaultMessage());
+			});
+			throw new EntityUpdateFailedException(
+					ErrorUtility.VALIDATION_FAILED_CODE
+					, ErrorUtility.RATING_UPLOAD_FAILED_MSG
+					, bindingResult.getFieldErrors());
+		}
+		
+		String userId = request.getUserPrincipal().getName();
+		
+		RatingUploadResponseBody ratingUploadResponseBody = movieManagmentService.uploadRating(ratingUploadRequestBody, userId, movieId);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(ratingUploadResponseBody);
+	}
+	
+	
 }

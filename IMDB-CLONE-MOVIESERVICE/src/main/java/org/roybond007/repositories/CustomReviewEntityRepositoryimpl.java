@@ -58,12 +58,12 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
 
             if(!updateResult.wasAcknowledged() || (updateResult.getMatchedCount() != 1))
                 throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG, null);
 
         } catch (DataAccessException e) {
             System.err.println(e.getLocalizedMessage());
             throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG, null);
         }
         
     }
@@ -91,12 +91,12 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
 
             if(!updateResult.wasAcknowledged() || (updateResult.getMatchedCount() != 1))
                 throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG, null);
 
         } catch (DataAccessException e) {
             System.err.println(e.getLocalizedMessage());
             throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+                    ErrorUtility.CONTENT_UPLOAD_FAILED_MSG, null);
         }
 
     }
@@ -126,12 +126,12 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
         } catch (DataAccessException e) {
             System.err.println(e.getLocalizedMessage());
             throw new ReactionUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                ErrorUtility.REACTION_UPDATE_FAILED_MSG);
+                ErrorUtility.REACTION_UPDATE_FAILED_MSG, null);
         }        
 
         if(target.isEmpty())
             throw new ReactionUploadFailedException(ErrorUtility.ENTITY_NOT_FOUND_CODE,
-                ErrorUtility.REACTION_UPDATE_FAILED_MSG);
+                ErrorUtility.REACTION_UPDATE_FAILED_MSG, null);
 
         ReviewEntity reviewEntity = target.get();
 
@@ -157,7 +157,7 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
             } catch (DataAccessException e) {
                 System.err.println(e.getLocalizedMessage());
                 throw new ReactionUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                ErrorUtility.REACTION_UPDATE_FAILED_MSG);
+                ErrorUtility.REACTION_UPDATE_FAILED_MSG, null);
             }
             
             reactUploadResponseBody.setStatus(1);
@@ -183,7 +183,7 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
             } catch (DataAccessException e) {
                 System.err.println(e.getLocalizedMessage());
                 throw new ReactionUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                ErrorUtility.REACTION_UPDATE_FAILED_MSG);
+                ErrorUtility.REACTION_UPDATE_FAILED_MSG, null);
             }
 
             reactUploadResponseBody.setStatus(0);

@@ -35,6 +35,9 @@ public class ErrorUtility {
 
 
 	public static final String CONTENT_LOAD_FAILED_MSG = "UNABLE TO LOAD DATA";
+
+
+	public static final String WISHLIST_UPDATE_FAILED_MSG = "WISHLIST CANNOT BE UPDATED";
 	
 	
 	

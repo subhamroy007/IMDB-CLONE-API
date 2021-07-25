@@ -58,13 +58,13 @@ public class CustomReplyEntityRepositoryImpl implements CustomReplyEntityReposit
 
             if(!updateResult.wasAcknowledged() || (updateResult.getMatchedCount() != 1)){
                 throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE, 
-				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG, null);
             }
                                     
         } catch (DataAccessException e) {
             System.err.println(e.getLocalizedMessage());
             throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE, 
-				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG, null);
         }
 
     }
@@ -93,12 +93,12 @@ public class CustomReplyEntityRepositoryImpl implements CustomReplyEntityReposit
         } catch (DataAccessException e) {
             System.err.println(e.getLocalizedMessage());
             throw new ReactionUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                ErrorUtility.REACTION_UPDATE_FAILED_MSG);
+                ErrorUtility.REACTION_UPDATE_FAILED_MSG, null);
         }        
 
         if(target.isEmpty())
             throw new ReactionUploadFailedException(ErrorUtility.ENTITY_NOT_FOUND_CODE,
-                ErrorUtility.REACTION_UPDATE_FAILED_MSG);
+                ErrorUtility.REACTION_UPDATE_FAILED_MSG, null);
 
         ReplyEntity replyEntity = target.get();
 
@@ -124,7 +124,7 @@ public class CustomReplyEntityRepositoryImpl implements CustomReplyEntityReposit
             } catch (DataAccessException e) {
                 System.err.println(e.getLocalizedMessage());
                 throw new ReactionUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                ErrorUtility.REACTION_UPDATE_FAILED_MSG);
+                ErrorUtility.REACTION_UPDATE_FAILED_MSG, null);
             }
             
             reactUploadResponseBody.setStatus(1);
@@ -150,7 +150,7 @@ public class CustomReplyEntityRepositoryImpl implements CustomReplyEntityReposit
             } catch (DataAccessException e) {
                 System.err.println(e.getLocalizedMessage());
                 throw new ReactionUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-                ErrorUtility.REACTION_UPDATE_FAILED_MSG);
+                ErrorUtility.REACTION_UPDATE_FAILED_MSG, null);
             }
 
             reactUploadResponseBody.setStatus(0);

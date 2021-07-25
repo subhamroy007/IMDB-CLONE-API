@@ -41,6 +41,7 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter{
 			.addFilterBefore(customPrincipalLoaderFilter, UsernamePasswordAuthenticationFilter.class)
 			.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/user/account/signup", "/user/account/signin").permitAll()
+				.antMatchers(HttpMethod.GET, "/user/data/**").permitAll()
 				.anyRequest().authenticated()
 			.and()
 			.sessionManagement()

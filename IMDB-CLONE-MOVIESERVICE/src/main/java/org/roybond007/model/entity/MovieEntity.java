@@ -34,7 +34,7 @@ public class MovieEntity {
 	private String trailerLink;
 	private long noOfReviews;
 	private long noOfRatings;
-	private double avgRating;
+	private long totalRating;
 	private String genres;
 	private List<RatingReference> ratingList;
 	private List<EntityReferenceWithTimestamp> reviewList;

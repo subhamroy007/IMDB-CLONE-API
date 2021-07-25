@@ -1,8 +1,12 @@
 package org.roybond007.repository;
 
-import org.roybond007.model.dto.FollowStatusResponseBody;
+import org.roybond007.model.dto.EntityListUpdatedResponseBody;
 
 public interface CustomUserEntityRepository {
 	
-	FollowStatusResponseBody updateFollowStatus(String currentUserId, String targetUserId);
+	EntityListUpdatedResponseBody updateFollowStatus(String currentUserId, String targetUserId);
+	
+	EntityListUpdatedResponseBody updateWishList(String userId, String movieId);
+	
+	EntityListUpdatedResponseBody updateWatchList(String userId, String movieId);
 }

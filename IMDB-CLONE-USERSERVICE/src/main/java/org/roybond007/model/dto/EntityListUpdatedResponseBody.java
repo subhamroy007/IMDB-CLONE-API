@@ -11,10 +11,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserAuthenticationResponseBody {
+public class EntityListUpdatedResponseBody {
 
-	private String token;
-	private String userId;
-	private boolean isAdmin;
+	private String sourceId;
+	private String targetId;
+	private long size;
+	private boolean status;
+	
 	
 }

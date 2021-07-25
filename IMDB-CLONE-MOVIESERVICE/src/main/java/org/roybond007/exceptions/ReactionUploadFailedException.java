@@ -3,26 +3,30 @@ package org.roybond007.exceptions;
 import java.util.HashMap;
 
 import org.roybond007.model.dto.ErrorResponseBody;
+import org.roybond007.utils.ErrorUtility;
 
-public class ReactionUploadFailedException extends RuntimeException{
+public class ReactionUploadFailedException extends CustomException{
+
+	private static final long serialVersionUID = -1798414549687752247L;
+	
     
-    private static final long serialVersionUID = -1798414549687752247L;
-	
-	private final int ERROR_CODE;
-
-	private final String ERROR_MSG;
-	
-	public ReactionUploadFailedException (int code, String msg) {
-		super("DATABASE SAVE FAILED");
-		this.ERROR_CODE = code;
-		this.ERROR_MSG = msg;
+    public ReactionUploadFailedException(int errorCode, String errorMsg, Object reason) {
+		super(errorCode, errorMsg, reason);
+		// TODO Auto-generated constructor stub
 	}
-	
-	public ErrorResponseBody getErrorResponseBody() {
-		
-		ErrorResponseBody errorResponseBody = new ErrorResponseBody(ERROR_CODE, ERROR_MSG, new HashMap<>());
-	
-		return errorResponseBody;
-	}
+    
+    @Override
+    public ErrorResponseBody getErrorResponseBody() {
+    	
+    	HashMap<String, Object> map = new HashMap<>();
+    	
+    	if(errorCode == ErrorUtility.DATA_LAYER_ERROR_CODE) {
+    		//body not needed
+    	}
+    	
+    	ErrorResponseBody errorResponseBody = new ErrorResponseBody(errorCode, errorMsg, map);
+    	
+    	return errorResponseBody;
+    }
 
 }

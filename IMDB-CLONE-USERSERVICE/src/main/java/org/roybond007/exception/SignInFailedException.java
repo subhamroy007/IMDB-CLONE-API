@@ -6,22 +6,21 @@ import java.util.Map;
 import org.roybond007.model.helper.ErrorResponseBody;
 import org.roybond007.utils.ErrorUtility;
 
-public class UserEntityUpdateFailedException extends CustomException {
+public class SignInFailedException extends CustomException {
 
-	private static final long serialVersionUID = 1956449995705013987L;
+	private static final long serialVersionUID = -6220825232968971972L;
 
-
-	public UserEntityUpdateFailedException(int errorCode, String errorMsg, Object reason) {
+	public SignInFailedException(int errorCode, String errorMsg, Object reason) {
 		super(errorCode, errorMsg, reason);
-
+		
 	}
-	
+
 	@Override
 	public ErrorResponseBody getErrorResponseBody() {
 		
 		Map<String, Object> map = new HashMap<>();
 		
-		if(errorCode == ErrorUtility.ENTITY_NOT_FOUND) {
+		if(errorCode == ErrorUtility.CREDENTIAL_NOT_MATCH_ERROR_CODE) {
 			map.put("userId", (String)reason);
 		}else if(errorCode == ErrorUtility.DATA_LAYER_ERROR) {
 			//no body needed
@@ -31,8 +30,5 @@ public class UserEntityUpdateFailedException extends CustomException {
 		
 		return errorResponseBody;
 	}
-	
-	
-	
-	
+
 }

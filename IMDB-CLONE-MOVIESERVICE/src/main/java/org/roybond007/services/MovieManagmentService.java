@@ -1,11 +1,10 @@
 package org.roybond007.services;
 
 
-
-
-
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.RatingUploadRequestBody;
+import org.roybond007.model.dto.RatingUploadResponseBody;
 import org.roybond007.model.dto.ReactUploadResponseBody;
 import org.roybond007.model.dto.ReplyUploadResponseBody;
 import org.roybond007.model.dto.ReviewUploadRequestBody;
@@ -24,5 +23,8 @@ public interface MovieManagmentService {
     ReactUploadResponseBody updateReviewReact(String userid, String reviewId);
 
     ReactUploadResponseBody updateReplyReact(String userId, String replyId);
+
+	RatingUploadResponseBody uploadRating(RatingUploadRequestBody ratingUploadRequestBody, String userId,
+			String movieId);
 
 }

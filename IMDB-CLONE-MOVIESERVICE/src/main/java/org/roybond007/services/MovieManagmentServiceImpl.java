@@ -12,6 +12,8 @@ import org.roybond007.exceptions.MovieUploadFailedException;
 import org.roybond007.exceptions.ReviewUploadFailedException;
 import org.roybond007.model.dto.MovieUploadRequestBody;
 import org.roybond007.model.dto.MovieUploadResponseBody;
+import org.roybond007.model.dto.RatingUploadRequestBody;
+import org.roybond007.model.dto.RatingUploadResponseBody;
 import org.roybond007.model.dto.ReactUploadResponseBody;
 import org.roybond007.model.dto.ReplyUploadResponseBody;
 import org.roybond007.model.dto.ReviewUploadRequestBody;
@@ -59,7 +61,8 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		} catch (DataAccessException e) {
 			
 			System.err.println(e.getLocalizedMessage());
-			throw new MovieUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG);
+			throw new 
+				MovieUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG, null);
 		}
 		
 		return new MovieUploadResponseBody(result.getId(), result.getTitle(), result.getDescription(),
@@ -69,7 +72,7 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 	private MovieEntity populateMovieEntity(MovieUploadRequestBody movieUploadRequestBody) {
 
 		MovieEntity movieEntity = new MovieEntity();
-		movieEntity.setAvgRating(0);
+		movieEntity.setTotalRating(0);
 		movieEntity.setDescription(movieUploadRequestBody.getDescription());
 		movieEntity.setGenres(movieUploadRequestBody.getGenres());
 		movieEntity.setId("Movie@" + System.currentTimeMillis());
@@ -98,7 +101,8 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 			} catch (IOException e) {
 
 				System.err.println(e.getLocalizedMessage());
-				throw new MovieUploadFailedException(ErrorUtility.FILE_SYSTEM_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG);
+				throw new 
+					MovieUploadFailedException(ErrorUtility.FILE_SYSTEM_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG, null);
 
 			}
 		}
@@ -111,7 +115,8 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		} catch (IOException e) {
 
 			System.err.println(e.getLocalizedMessage());
-			throw new MovieUploadFailedException(ErrorUtility.FILE_SYSTEM_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG);
+			throw new 
+				MovieUploadFailedException(ErrorUtility.FILE_SYSTEM_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG, null);
 		}
 
 		
@@ -130,7 +135,8 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 			} catch (IOException e) {
 
 				System.err.println(e.getLocalizedMessage());
-				throw new MovieUploadFailedException(ErrorUtility.FILE_SYSTEM_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG);
+				throw new 
+					MovieUploadFailedException(ErrorUtility.FILE_SYSTEM_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG, null);
 
 			}
 		}
@@ -143,7 +149,8 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		} catch (IOException e) {
 
 			System.err.println(e.getLocalizedMessage());
-			throw new MovieUploadFailedException(ErrorUtility.FILE_SYSTEM_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG);
+			throw new 
+				MovieUploadFailedException(ErrorUtility.FILE_SYSTEM_ERROR_CODE, ErrorUtility.MOVIE_UPLOAD_FAILED_MSG, null);
 		}
 
 		return "posters/" + posterName;
@@ -169,7 +176,7 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		} catch (DataAccessException e) {
 			System.err.println(e.getLocalizedMessage());
 			throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE,
-				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG, null);
 		}
 		
 		reviewEntityRepository.uploadReviewToUser(target);
@@ -197,7 +204,7 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		} catch (DataAccessException e) {
 			System.err.println(e.getLocalizedMessage());
 			throw new ReviewUploadFailedException(ErrorUtility.DATA_LAYER_ERROR_CODE, 
-				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG);
+				ErrorUtility.CONTENT_UPLOAD_FAILED_MSG, null);
 		}
 
 		replyEntityRepository.uploadReplyToReview(target);
@@ -217,4 +224,14 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		return reactUploadResponseBody;
 	}
 
+	@Override
+	public RatingUploadResponseBody uploadRating(RatingUploadRequestBody ratingUploadRequestBody, String userId,
+			String movieId) {
+		
+		RatingUploadResponseBody ratingUploadResponseBody = movieEntityRepository
+				.uploadRatingToMovie(ratingUploadRequestBody, userId, movieId);
+		
+		return ratingUploadResponseBody;
+	}
+	
 }
