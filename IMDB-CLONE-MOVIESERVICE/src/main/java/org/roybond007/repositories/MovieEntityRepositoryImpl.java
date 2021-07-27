@@ -14,19 +14,16 @@ import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Repository;
 import static org.springframework.data.mongodb.core.query.Criteria.*;
 
 import java.util.Optional;
 
-
-@Repository
-public class CustomMovieEntityRepositoryImpl implements CustomMovieEntityRepository {
+public class MovieEntityRepositoryImpl implements MovieEntityRepositoryCustom {
 
 	private final MongoTemplate mongoTemplate;
 	
 	@Autowired
-	public CustomMovieEntityRepositoryImpl(MongoTemplate mongoTemplate) {
+	public MovieEntityRepositoryImpl(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 	
@@ -115,15 +112,14 @@ public class CustomMovieEntityRepositoryImpl implements CustomMovieEntityReposit
 			
 			RatingReference oldMovieRatingRef = movieEntity.getRatingList().get(0);
 			RatingReference newMovieRatingRef = 
-					new RatingReference(movieId, ratingUploadRequestBody.getRating(), timestamp);
+					new RatingReference(userId, ratingUploadRequestBody.getRating(), timestamp);
 			
 			
 			Update uploadRatingToMovieUpdate = new Update()
 					.inc("totalRating", (newMovieRatingRef.getRating()-oldMovieRatingRef.getRating()))
-					.pull("ratinglist", oldMovieRatingRef)
-					.push("ratingList")
-					.sort(Sort.by("timestamp").descending())
-					.each(newMovieRatingRef);
+					.set("ratingList.$[elem].rating", newMovieRatingRef.getRating())
+					.set("ratingList.$[elem].timestamp", newMovieRatingRef.getTimestamp())
+					.filterArray(where("elem._id").is(oldMovieRatingRef.getId()));
 			
 			
 			Optional<MovieEntity> target = null;
@@ -158,6 +154,7 @@ public class CustomMovieEntityRepositoryImpl implements CustomMovieEntityReposit
 		return ratingUploadResponseBody;
 	}
 
+	@SuppressWarnings("unused")
 	private void uploadRatingToUser(RatingUploadResponseBody ratingUploadResponseBody, boolean isUpdated, 
 			RatingReference oldMovieRatingRef) {
 
@@ -218,10 +215,10 @@ public class CustomMovieEntityRepositoryImpl implements CustomMovieEntityReposit
 					);
 			
 			Update updateRatingToUserUpdate = new Update()
-					.pull("ratingList", oldUserRatingRef)
-					.push("ratingList")
-					.sort(Sort.by("timestamp").descending())
-					.each(newUserRatingRef);
+					.set("ratingList.$[elem].rating", newUserRatingRef.getRating())
+					.set("ratingList.$[elem].timestamp", newUserRatingRef.getTimestamp())
+					.filterArray(where("elem._id").is(oldUserRatingRef.getId()));
+
 
 			Optional<UserEntity> target = null;
 			

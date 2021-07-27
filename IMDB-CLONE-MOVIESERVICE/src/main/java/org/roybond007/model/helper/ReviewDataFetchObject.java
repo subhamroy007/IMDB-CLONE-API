@@ -1,7 +1,5 @@
 package org.roybond007.model.helper;
 
-import java.util.List;
-
 import org.roybond007.model.dto.ReplyDataFetchResponseBody;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +17,7 @@ public class ReviewDataFetchObject {
 
 	private String id;
 	private long timestamp;
-	private String userId;
+	private String content;
 	private EntityReferenceWithPicture userObject;
 	private long noOfLikes;
 	private long noOfReplies;

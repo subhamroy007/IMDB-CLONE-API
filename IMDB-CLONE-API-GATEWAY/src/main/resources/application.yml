@@ -51,8 +51,8 @@ spring:
       - id: MANAGMENT-ROUTE
         predicates:
         - Path=/user/followrequest
-        - Method=POST
-        - Query=target_user_id
+        - Method=PUT
+        - Query=targetUserId
         filters:
         - CustomTokenValidationFilterFactory
         - name: RequestSize
@@ -81,8 +81,147 @@ spring:
         - CustomHeaderPopulateFilterFactory
         - SetPath=/movie/fetch/info
         uri: lb://imdb-clone-movieservice
-
-
+      - id: REVIEW-ROUTE
+        predicates:
+        - Path=/movie/review
+        - Method=GET
+        - Query=movieId
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/review
+        uri: lb://imdb-clone-movieservice
+      - id: REPLY-ROUTE
+        predicates:
+        - Path=/movie/reply
+        - Method=GET
+        - Query=reviewId
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/reply
+        uri: lb://imdb-clone-movieservice
+      - id: SINGLE-REVIEW-ROUTE
+        predicates:
+        - Path=/movie/review
+        - Method=GET
+        - Query=reviewId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/review
+        uri: lb://imdb-clone-movieservice
+      - id: SINGLE-REPLY-ROUTE
+        predicates:
+        - Path=/movie/reply
+        - Method=GET
+        - Query=replyId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/reply
+        uri: lb://imdb-clone-movieservice
+      - id: REVIEW-UPLOAD-ROUTE
+        predicates:
+        - Path=/movie/review
+        - Method=POST
+        - Query=movieId
+        filters:
+        - CustomTokenValidationFilterFactory
+        - name: RequestSize
+          args:
+            maxSize: 2KB
+        - SetPath=/movie/managment/review
+        uri: lb://imdb-clone-movieservice
+      - id: REPLY-UPLOAD-ROUTE
+        predicates:
+        - Path=/movie/reply
+        - Method=POST
+        - Query=reviewId
+        filters:
+        - CustomTokenValidationFilterFactory
+        - name: RequestSize
+          args:
+            maxSize: 2KB
+        - SetPath=/movie/managment/reply
+        uri: lb://imdb-clone-movieservice
+      - id: REVIEW-REACT-ROUTE
+        predicates:
+        - Path=/movie/review/react
+        - Method=PUT
+        - Query=reviewId
+        filters:
+        - CustomTokenValidationFilterFactory
+        - SetPath=/movie/managment/review/react
+        uri: lb://imdb-clone-movieservice
+      - id: REPLY-REACT-ROUTE
+        predicates:
+        - Path=/movie/reply/react
+        - Method=PUT
+        - Query=replyId
+        filters:
+        - CustomTokenValidationFilterFactory
+        - SetPath=/movie/managment/reply/react
+        uri: lb://imdb-clone-movieservice
+      - id: RATING-UPLOAD-ROUTE
+        predicates:
+        - Path=/movie/rating
+        - Method=PUT
+        - Query=movieId
+        filters:
+        - CustomTokenValidationFilterFactory
+        - name: RequestSize
+          args:
+            maxSize: 2KB
+        - SetPath=/movie/managment/rating
+        uri: lb://imdb-clone-movieservice
+      - id: WISHLIST-UPDATE-ROUTE
+        predicates:
+        - Path=/user/wishlist
+        - Method=PUT
+        - Query=movieId
+        filters:
+        - CustomTokenValidationFilterFactory
+        - SetPath=/user/managment/wishlist
+        uri: lb://imdb-clone-userservice
+      - id: WATCHLIST-UPDATE-ROUTE
+        predicates:
+        - Path=/user/watchlist
+        - Method=PUT
+        - Query=movieId
+        filters:
+        - CustomTokenValidationFilterFactory
+        - SetPath=/user/managment/watchlist
+        uri: lb://imdb-clone-userservice
+      - id: WISHLIST-ROUTE
+        predicates:
+        - Path=/user/wishlist
+        - Method=GET
+        - Query=userId
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/user/data/wishlist
+        uri: lb://imdb-clone-userservice
+      - id: WATCHLIST-ROUTE
+        predicates:
+        - Path=/user/watchlist
+        - Method=GET
+        - Query=userId
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/user/data/watchlist
+        uri: lb://imdb-clone-userservice
+      - id: RATINGLIST-ROUTE
+        predicates:
+        - Path=/user/ratinglist
+        - Method=GET
+        - Query=userId
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/user/data/ratinglist
+        uri: lb://imdb-clone-userservice
+      
           
 discovery:
   server:

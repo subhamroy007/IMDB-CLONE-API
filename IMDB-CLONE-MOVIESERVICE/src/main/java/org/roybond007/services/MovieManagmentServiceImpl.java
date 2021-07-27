@@ -42,8 +42,11 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 	private final ReplyEntityRepository replyEntityRepository;
 
 	@Autowired
-	public MovieManagmentServiceImpl(MovieEntityRepository movieEntityRepository,
-		ReviewEntityRepository reviewEntityRepository, ReplyEntityRepository replyEntityRepository) {
+	public MovieManagmentServiceImpl(
+			MovieEntityRepository movieEntityRepository
+			, ReviewEntityRepository reviewEntityRepository
+			, ReplyEntityRepository replyEntityRepository
+	) {
 		this.movieEntityRepository = movieEntityRepository;
 		this.reviewEntityRepository = reviewEntityRepository;
 		this.replyEntityRepository = replyEntityRepository;
@@ -182,7 +185,7 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		reviewEntityRepository.uploadReviewToUser(target);
 		reviewEntityRepository.uploadReviewToMovie(target);
 
-		return new ReviewUploadResponseBody(userId, movieId, target.getContent(), target.getTimestamp());
+		return new ReviewUploadResponseBody(target.getId(), userId, movieId, target.getContent(), target.getTimestamp());
 	}
 
 	@Override
@@ -209,18 +212,18 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 
 		replyEntityRepository.uploadReplyToReview(target);
 
-		return new ReplyUploadResponseBody(userId, reviewId, target.getContent(), target.getTimestamp());
+		return new ReplyUploadResponseBody(target.getId(), userId, reviewId, target.getContent(), target.getTimestamp());
 	}
 
 	@Override
 	public ReactUploadResponseBody updateReviewReact(String userId, String reviewId) {
-		ReactUploadResponseBody reactUploadResponseBody = reviewEntityRepository.uploadReacToReview(userId, reviewId);
+		ReactUploadResponseBody reactUploadResponseBody = reviewEntityRepository.uploadReactToReview(userId, reviewId);
 		return reactUploadResponseBody;
 	}
 
 	@Override
 	public ReactUploadResponseBody updateReplyReact(String userId, String replyId) {
-		ReactUploadResponseBody reactUploadResponseBody = replyEntityRepository.uploadReacToReply(userId, replyId);
+		ReactUploadResponseBody reactUploadResponseBody = replyEntityRepository.uploadReactToReply(userId, replyId);
 		return reactUploadResponseBody;
 	}
 

@@ -138,7 +138,7 @@ public class ImdbCloneUserserviceApplication implements CommandLineRunner{
 																	.items(JsonSchemaObject.object()
 																				.required("_id", "rating", "timestamp")
 																				.properties(JsonSchemaProperty.string("_id"),
-																							JsonSchemaProperty.float64("rating"),
+																							JsonSchemaProperty.int64("rating"),
 																							JsonSchemaProperty.int64("timestamp")
 																				)
 																	),
@@ -194,35 +194,30 @@ public class ImdbCloneUserserviceApplication implements CommandLineRunner{
 			.ensureIndex(
 					new Index().collation(userEntityCollation)
 					.named("userEntityFollowerListUserIdIndex").on("followerList._id", Direction.DESC)
-					.unique()
 			);
 			
 			mongoTemplate.indexOps(UserEntity.class)
 			.ensureIndex(
 					new Index().collation(userEntityCollation)
 					.named("userEntityFollowingListUserIdIndex").on("followingList._id", Direction.DESC)
-					.unique()
 			);
 			
 			mongoTemplate.indexOps(UserEntity.class)
 			.ensureIndex(
 					new Index().collation(userEntityCollation)
 					.named("userEntityWishListUserIdIndex").on("wishList._id", Direction.DESC)
-					.unique()
 			);
 			
 			mongoTemplate.indexOps(UserEntity.class)
 			.ensureIndex(
 					new Index().collation(userEntityCollation)
 					.named("userEntityWatchListUserIdIndex").on("watchList._id", Direction.DESC)
-					.unique()
 			);
 			
 			mongoTemplate.indexOps(UserEntity.class)
 			.ensureIndex(
 					new Index().collation(userEntityCollation)
 					.named("userEntityRatingListUserIdIndex").on("ratingList._id", Direction.DESC)
-					.unique()
 			);
 		}
 		

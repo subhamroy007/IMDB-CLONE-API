@@ -18,7 +18,7 @@ public class RatingReference {
 
 	private String id;
 	
-	private double rating;
+	private long rating;
 	
 	private long timestamp;
 	

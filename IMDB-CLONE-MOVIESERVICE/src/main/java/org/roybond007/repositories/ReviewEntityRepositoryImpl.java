@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Repository;
 
 import com.mongodb.client.result.UpdateResult;
 import static org.springframework.data.mongodb.core.query.Criteria.*;
@@ -23,16 +22,15 @@ import static org.springframework.data.mongodb.core.query.Criteria.*;
 import java.util.Optional;
 
 
-
-@Repository
-public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepository{
+public class ReviewEntityRepositoryImpl implements ReviewEntityRepositoryCustom{
 
     private final MongoTemplate mongoTemplate;
 
     
     @Autowired
-    public CustomReviewEntityRepositoryimpl(MongoTemplate mongoTemplate) {
+    public ReviewEntityRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+        System.out.println("review repo initialized");
     }
 
     @Override
@@ -102,7 +100,7 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
     }
 
     @Override
-    public ReactUploadResponseBody uploadReacToReview(String userId, String reviewId) {
+    public ReactUploadResponseBody uploadReactToReview(String userId, String reviewId) {
         
         ReactUploadResponseBody reactUploadResponseBody = new ReactUploadResponseBody();
         reactUploadResponseBody.setId(reviewId);
@@ -112,7 +110,7 @@ public class CustomReviewEntityRepositoryimpl implements CustomReviewEntityRepos
 
         reactToReviewQuery.fields()
             .include("_id", "noOfLikes")
-            .elemMatch("likeList", where("id").is(userId));
+            .elemMatch("likeList", where("_id").is(userId));
 
 
         Optional<ReviewEntity> target = null;

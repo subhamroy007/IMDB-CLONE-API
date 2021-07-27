@@ -104,25 +104,6 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 			Optional<UserEntity> targetUserEntityFollowStatusUserEntity = null;
 			
 			try {
-				currentUserEntityFollowStatusUpdateResult = mongoTemplate
-					.update(UserEntity.class)
-					.matching(fetchCurrentUserEntityQuery)
-					.apply(currentUserEntityFollowStatusUpdate)
-					.first();
-				if(!currentUserEntityFollowStatusUpdateResult.wasAcknowledged()) {
-					System.err.println("database acknoledgement failed in follow request");
-					throw new 
-						UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
-				}
-				
-			}catch (DataAccessException ex) {
-				System.err.println(ex.getLocalizedMessage());
-				throw new 
-					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
-			}
-			
-			
-			try {
 				targetUserEntityFollowStatusUserEntity = mongoTemplate
 					.update(UserEntity.class)
 					.matching(fetchTargetUserEntityQuery)
@@ -143,6 +124,26 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 				throw new 
 					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
 			}
+			
+			
+			try {
+				currentUserEntityFollowStatusUpdateResult = mongoTemplate
+					.update(UserEntity.class)
+					.matching(fetchCurrentUserEntityQuery)
+					.apply(currentUserEntityFollowStatusUpdate)
+					.first();
+				if(!currentUserEntityFollowStatusUpdateResult.wasAcknowledged()) {
+					System.err.println("database acknoledgement failed in follow request");
+					throw new 
+						UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
+				}
+				
+			}catch (DataAccessException ex) {
+				System.err.println(ex.getLocalizedMessage());
+				throw new 
+					UserEntityUpdateFailedException(ErrorUtility.DATA_LAYER_ERROR, ErrorUtility.FOLLOW_REQUEST_FAILED_MSG, null);
+			}
+			
 			
 			
 		}else {	//this block runs when the current user does follow target user
@@ -307,9 +308,9 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 		entityListUpdatedResponseBody.setTargetId(movieId);
 		
 		
-		Query userWishListQuery = new Query(where("userId").is(userId));
+		Query userWatchListQuery = new Query(where("userId").is(userId));
 		
-		userWishListQuery
+		userWatchListQuery
 			.fields()
 			.include("_id", "userId", "watchListLength")
 			.elemMatch("watchList", where("_id").is(movieId));
@@ -320,7 +321,7 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 			result = mongoTemplate
 				.query(UserEntity.class)
 				.as(UserEntity.class)
-				.matching(userWishListQuery)
+				.matching(userWatchListQuery)
 				.first();
 		} catch (DataAccessException e) {
 			System.err.println(e.getLocalizedMessage());
@@ -336,26 +337,26 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 		
 		UserEntity userEntity = result.get();
 		
-		if(userEntity.getWishList() == null || userEntity.getWishList().size() == 0) {
+		if(userEntity.getWatchList() == null || userEntity.getWatchList().size() == 0) {
 			
-			EntityReferenceWithTimestamp wishListRef = new EntityReferenceWithTimestamp(movieId, System.currentTimeMillis());
+			EntityReferenceWithTimestamp watchListRef = new EntityReferenceWithTimestamp(movieId, System.currentTimeMillis());
 			
-			Update userWishListUpdate = new Update()
+			Update userWatchListUpdate = new Update()
 												.inc("watchListLength", 1)
 												.push("watchList")
 												.sort(Sort.by("timestamp").descending())
-												.each(wishListRef);
+												.each(watchListRef);
 			
 			try {
 				Optional<UserEntity> target = mongoTemplate
 												.update(UserEntity.class)
-												.matching(userWishListQuery)
-												.apply(userWishListUpdate)
+												.matching(userWatchListQuery)
+												.apply(userWatchListUpdate)
 												.withOptions(FindAndModifyOptions.options().returnNew(true))
 												.findAndModify();
 
 				entityListUpdatedResponseBody.setStatus(true);
-				entityListUpdatedResponseBody.setSize(target.get().getWishListLength());
+				entityListUpdatedResponseBody.setSize(target.get().getWatchListLength());
 			
 			} catch (DataAccessException e) {
 				System.err.println(e.getLocalizedMessage());
@@ -366,23 +367,23 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 			
 		}else {
 			
-			EntityReferenceWithTimestamp wishListRef = userEntity.getWishList().get(0);
+			EntityReferenceWithTimestamp watchListRef = userEntity.getWatchList().get(0);
 			
-			Update userWishListUpdate = new Update()
+			Update userWatchListUpdate = new Update()
 												.inc("watchListLength", -1)
-												.pull("watchList", wishListRef);
+												.pull("watchList", watchListRef);
 			
 			try {
 				
 				Optional<UserEntity> target = mongoTemplate
 												.update(UserEntity.class)
-												.matching(userWishListQuery)
-												.apply(userWishListUpdate)
+												.matching(userWatchListQuery)
+												.apply(userWatchListUpdate)
 												.withOptions(FindAndModifyOptions.options().returnNew(true))
 												.findAndModify();
 				
 				entityListUpdatedResponseBody.setStatus(false);
-				entityListUpdatedResponseBody.setSize(target.get().getWishListLength());
+				entityListUpdatedResponseBody.setSize(target.get().getWatchListLength());
 				
 			} catch (DataAccessException e) {
 				System.err.println(e.getLocalizedMessage());

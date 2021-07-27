@@ -14,23 +14,23 @@ import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Repository;
+
 
 import com.mongodb.client.result.UpdateResult;
 import static org.springframework.data.mongodb.core.query.Criteria.*;
 
 import java.util.Optional;
 
-@Repository
-public class CustomReplyEntityRepositoryImpl implements CustomReplyEntityRepository{
+public class ReplyEntityRepositoryImpl implements ReplyEntityRepositoryCustom{
    
     private final MongoTemplate mongoTemplate;
 
 
 
     @Autowired
-    public CustomReplyEntityRepositoryImpl(MongoTemplate mongoTemplate) {
+    public ReplyEntityRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+        System.out.println("reply repo initialized");
     }
 
 
@@ -70,7 +70,7 @@ public class CustomReplyEntityRepositoryImpl implements CustomReplyEntityReposit
     }
 
     @Override
-    public ReactUploadResponseBody uploadReacToReply(String userId, String replyId) {
+    public ReactUploadResponseBody uploadReactToReply(String userId, String replyId) {
         ReactUploadResponseBody reactUploadResponseBody = new ReactUploadResponseBody();
         reactUploadResponseBody.setId(replyId);
         reactUploadResponseBody.setUserId(userId);
@@ -79,7 +79,7 @@ public class CustomReplyEntityRepositoryImpl implements CustomReplyEntityReposit
 
         reactToReviewQuery.fields()
             .include("_id", "noOfLikes")
-            .elemMatch("likeList", where("id").is(userId));
+            .elemMatch("likeList", where("_id").is(userId));
 
 
         Optional<ReplyEntity> target = null;

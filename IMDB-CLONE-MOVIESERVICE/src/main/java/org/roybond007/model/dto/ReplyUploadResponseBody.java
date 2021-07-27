@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString
 public class ReplyUploadResponseBody {
 
+	private String id;
     private String userId;
     private String reviewId;
     private String content;

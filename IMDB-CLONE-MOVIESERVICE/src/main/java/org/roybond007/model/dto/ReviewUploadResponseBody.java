@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString
 public class ReviewUploadResponseBody {
 
+	private String id;
     private String userId;
     private String movieId;
     private String content;

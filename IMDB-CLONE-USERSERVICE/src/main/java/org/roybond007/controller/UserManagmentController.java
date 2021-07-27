@@ -49,7 +49,7 @@ public class UserManagmentController {
 		return ResponseEntity.ok(entityListUpdatedResponseBody);
 	}
 
-	@PutMapping(value = "/watchlist", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@PutMapping(value = "/wishlist", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<?> updateWishList(@RequestParam(value = "movieId", required = true) String movieId,
 			HttpServletRequest request) {
 

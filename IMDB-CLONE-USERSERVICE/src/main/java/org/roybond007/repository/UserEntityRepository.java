@@ -23,19 +23,22 @@ public interface UserEntityRepository extends PagingAndSortingRepository<UserEnt
 	@Aggregation(pipeline = {
 			"{\r\n"
 			+ "        $match: {\r\n"
-			+ "            _id: ?0\r\n"
+			+ "            userId: ?0\r\n"
 			+ "        }\r\n"
 			+ "    }",
 			"{\r\n"
 			+ "        $project: {\r\n"
-			+ "            _id: 1,\r\n"
+			+ "            _id: \"$userId\",\r\n"
 			+ "            wishListPage: {\r\n"
 			+ "                $slice: [\"$wishList\", ?1, ?2]\r\n"
 			+ "            }\r\n"
 			+ "        }\r\n"
 			+ "    }",
 			"{\r\n"
-			+ "        $unwind: \"$wishListPage\"\r\n"
+			+ "        $unwind: {\r\n"
+			+ "            path: \"$wishListPage\",\r\n"
+			+ "            preserveNullAndEmptyArrays: true\r\n"
+			+ "        }\r\n"
 			+ "    }",
 			"{\r\n"
 			+ "        $lookup: {\r\n"
@@ -108,19 +111,22 @@ public interface UserEntityRepository extends PagingAndSortingRepository<UserEnt
 	@Aggregation(pipeline = {
 			"{\r\n"
 					+ "        $match: {\r\n"
-					+ "            _id: ?0\r\n"
+					+ "            userId: ?0\r\n"
 					+ "        }\r\n"
 					+ "    }",
 					"{\r\n"
 					+ "        $project: {\r\n"
-					+ "            _id: 1,\r\n"
+					+ "            _id: \"$userId\",\r\n"
 					+ "            watchListPage: {\r\n"
 					+ "                $slice: [\"$watchList\", ?1, ?2]\r\n"
 					+ "            }\r\n"
 					+ "        }\r\n"
 					+ "    }",
 					"{\r\n"
-					+ "        $unwind: \"$watchListPage\"\r\n"
+					+ "        $unwind: {\r\n"
+					+ "            path: \"$watchListPage\",\r\n"
+					+ "            preserveNullAndEmptyArrays: true\r\n"
+					+ "        }\r\n"
 					+ "    }",
 					"{\r\n"
 					+ "        $lookup: {\r\n"
@@ -193,19 +199,22 @@ public interface UserEntityRepository extends PagingAndSortingRepository<UserEnt
 	@Aggregation(pipeline = {
 			"{\r\n"
 			+ "        $match: {\r\n"
-			+ "            _id: ?0\r\n"
+			+ "            userId: ?0\r\n"
 			+ "        }\r\n"
 			+ "    }",
 			"{\r\n"
 			+ "        $project: {\r\n"
-			+ "            _id: 1,\r\n"
+			+ "            _id: \"$userId\",\r\n"
 			+ "            ratingListPage: {\r\n"
 			+ "                $slice: [\"$ratingList\", ?1, ?2]\r\n"
 			+ "            }\r\n"
 			+ "        }\r\n"
 			+ "    }",
 			"{\r\n"
-			+ "        $unwind: \"$ratingListPage\"\r\n"
+			+ "        $unwind: {\r\n"
+			+ "            path: \"$ratingListPage\",\r\n"
+			+ "            preserveNullAndEmptyArrays: true\r\n"
+			+ "        }\r\n"
 			+ "    }",
 			"{\r\n"
 			+ "        $lookup: {\r\n"

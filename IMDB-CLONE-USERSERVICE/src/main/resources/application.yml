@@ -21,6 +21,12 @@ gateway:
 
 user:
   key: myuserkey
+  wishlist:
+    pagesize: 5
+  watchlist:
+    pagesize: 5
+  ratinglist:
+    pagesize: 5
     
 eureka: 
   instance:

@@ -19,6 +19,8 @@ import org.springframework.data.mongodb.core.query.Collation.ComparisonLevel;
 import org.springframework.data.mongodb.core.schema.JsonSchemaObject;
 import org.springframework.data.mongodb.core.schema.JsonSchemaProperty;
 import org.springframework.data.mongodb.core.schema.MongoJsonSchema;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
 import com.mongodb.client.model.ValidationAction;
 import com.mongodb.client.model.ValidationLevel;
 
@@ -174,7 +176,7 @@ public class ImdbCloneMovieserviceApplication implements CommandLineRunner{
 				.ensureIndex(new Index()
 						.collation(reviewEntityCollation)
 						.named("reviewEntityLikeListUserIdIndex")
-						.on("likeList._id", Direction.DESC).unique()
+						.on("likeList._id", Direction.DESC)
 				);
 		}
 		
@@ -227,7 +229,7 @@ public class ImdbCloneMovieserviceApplication implements CommandLineRunner{
 			.indexOps(ReplyEntity.class)
 			.ensureIndex(new Index().collation(replyEntityCollation)
 			.named("replyEntityLikeListUserIdIndex")
-			.on("likeList._id", Direction.DESC).unique()
+			.on("likeList._id", Direction.DESC)
 			);
 		}
 		

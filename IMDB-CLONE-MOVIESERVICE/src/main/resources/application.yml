@@ -19,6 +19,12 @@ spring:
       max-request-size: 260MB
 
 
+reply:
+  list:
+    pagesize: 5
+review:
+  list:
+    pagesize: 5
 
 gateway:
   key: mygatewaykey
