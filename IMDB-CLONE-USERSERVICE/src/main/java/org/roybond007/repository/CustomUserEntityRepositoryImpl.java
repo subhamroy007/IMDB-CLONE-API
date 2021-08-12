@@ -2,6 +2,7 @@ package org.roybond007.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -16,6 +17,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.*;
 import java.util.Optional;
 import org.roybond007.exception.UserEntityUpdateFailedException;
 import org.roybond007.model.dto.EntityListUpdatedResponseBody;
+import org.roybond007.model.entity.MovieEntity;
 import org.roybond007.model.entity.UserEntity;
 import org.roybond007.model.helper.EntityReferenceWithTimestamp;
 import org.roybond007.utils.ErrorUtility;
@@ -215,6 +217,8 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 		
 		Query userWishListQuery = new Query(where("userId").is(userId));
 		
+		Query movieWishListQuery = new Query(where("_id").is(movieId));
+		
 		userWishListQuery
 			.fields()
 			.include("_id", "userId", "wishListLength")
@@ -244,13 +248,20 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 		
 		if(userEntity.getWishList() == null || userEntity.getWishList().size() == 0) {
 			
-			EntityReferenceWithTimestamp wishListRef = new EntityReferenceWithTimestamp(movieId, System.currentTimeMillis());
+			EntityReferenceWithTimestamp userWishListRef = new EntityReferenceWithTimestamp(movieId, System.currentTimeMillis());
+			EntityReferenceWithTimestamp movieWishListRef = new EntityReferenceWithTimestamp(userId, System.currentTimeMillis());
 			
 			Update userWishListUpdate = new Update()
 												.inc("wishListLength", 1)
 												.push("wishList")
 												.sort(Sort.by("timestamp").descending())
-												.each(wishListRef);
+												.each(userWishListRef);
+			
+			Update movieWishListUpdate = new Update()
+												.inc("wishListLength", 1)
+												.push("wishList")
+												.sort(Sort.by("timestamp").descending())
+												.each(movieWishListRef);
 			
 			try {
 				Optional<UserEntity> target = mongoTemplate
@@ -260,6 +271,16 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 												.withOptions(FindAndModifyOptions.options().returnNew(true))
 												.findAndModify();
 
+				UpdateResult movieUpdateResult = mongoTemplate
+												.update(MovieEntity.class)
+												.matching(movieWishListQuery)
+												.apply(movieWishListUpdate)
+												.first();
+
+				if(!movieUpdateResult.wasAcknowledged() || movieUpdateResult.getMatchedCount() <= 0)
+					throw new EmptyResultDataAccessException("no result found", 0);
+				
+				
 				entityListUpdatedResponseBody.setStatus(true);
 				entityListUpdatedResponseBody.setSize(target.get().getWishListLength());
 			
@@ -272,11 +293,18 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 			
 		}else {
 			
-			EntityReferenceWithTimestamp wishListRef = userEntity.getWishList().get(0);
+			EntityReferenceWithTimestamp userWishListRef = userEntity.getWishList().get(0);
+			EntityReferenceWithTimestamp movieWishListRef = 
+					new EntityReferenceWithTimestamp(userId, userWishListRef.getTimestamp());
+			
 			
 			Update userWishListUpdate = new Update()
 												.inc("wishListLength", -1)
-												.pull("wishList", wishListRef);
+												.pull("wishList", userWishListRef);
+			
+			Update movieWatchListUpdate = new Update()
+												.inc("wishListLength", -1)
+												.pull("wishList", movieWishListRef);
 			
 			try {
 				
@@ -286,6 +314,15 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 												.apply(userWishListUpdate)
 												.withOptions(FindAndModifyOptions.options().returnNew(true))
 												.findAndModify();
+				
+				UpdateResult movieUpdateResult = mongoTemplate
+												.update(MovieEntity.class)
+												.matching(movieWishListQuery)
+												.apply(movieWatchListUpdate)
+												.first();
+
+				if(!movieUpdateResult.wasAcknowledged() || movieUpdateResult.getMatchedCount() <= 0)
+					throw new EmptyResultDataAccessException("no result found", 0);
 				
 				entityListUpdatedResponseBody.setStatus(false);
 				entityListUpdatedResponseBody.setSize(target.get().getWishListLength());
@@ -309,6 +346,8 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 		
 		
 		Query userWatchListQuery = new Query(where("userId").is(userId));
+		
+		Query movieWatchListQuery = new Query(where("_id").is(movieId));
 		
 		userWatchListQuery
 			.fields()
@@ -339,13 +378,24 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 		
 		if(userEntity.getWatchList() == null || userEntity.getWatchList().size() == 0) {
 			
-			EntityReferenceWithTimestamp watchListRef = new EntityReferenceWithTimestamp(movieId, System.currentTimeMillis());
+			EntityReferenceWithTimestamp userWatchListRef = new EntityReferenceWithTimestamp(movieId, System.currentTimeMillis());
+			EntityReferenceWithTimestamp movieWatchListRef = new EntityReferenceWithTimestamp(userId, System.currentTimeMillis());
+			
 			
 			Update userWatchListUpdate = new Update()
 												.inc("watchListLength", 1)
 												.push("watchList")
 												.sort(Sort.by("timestamp").descending())
-												.each(watchListRef);
+												.each(userWatchListRef);
+			
+			
+			
+			Update movieWatchListUpdate = new Update()
+												.inc("watchListLength", 1)
+												.push("watchList")
+												.sort(Sort.by("timestamp").descending())
+												.each(movieWatchListRef);
+			
 			
 			try {
 				Optional<UserEntity> target = mongoTemplate
@@ -355,6 +405,16 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 												.withOptions(FindAndModifyOptions.options().returnNew(true))
 												.findAndModify();
 
+				
+				UpdateResult movieUpdateResult = mongoTemplate
+													.update(MovieEntity.class)
+													.matching(movieWatchListQuery)
+													.apply(movieWatchListUpdate)
+													.first();
+				
+				if(!movieUpdateResult.wasAcknowledged() || movieUpdateResult.getMatchedCount() <= 0)
+					throw new EmptyResultDataAccessException("no result found", 0);
+				
 				entityListUpdatedResponseBody.setStatus(true);
 				entityListUpdatedResponseBody.setSize(target.get().getWatchListLength());
 			
@@ -367,11 +427,18 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 			
 		}else {
 			
-			EntityReferenceWithTimestamp watchListRef = userEntity.getWatchList().get(0);
+			EntityReferenceWithTimestamp userWatchListRef = userEntity.getWatchList().get(0);
+			EntityReferenceWithTimestamp movieWatchListRef = 
+					new EntityReferenceWithTimestamp(userId, userWatchListRef.getTimestamp());
+			
 			
 			Update userWatchListUpdate = new Update()
 												.inc("watchListLength", -1)
-												.pull("watchList", watchListRef);
+												.pull("watchList", userWatchListRef);
+			
+			Update movieWatchListUpdate = new Update()
+												.inc("watchListLength", -1)
+												.pull("watchList", movieWatchListRef);
 			
 			try {
 				
@@ -381,6 +448,15 @@ public class CustomUserEntityRepositoryImpl implements CustomUserEntityRepositor
 												.apply(userWatchListUpdate)
 												.withOptions(FindAndModifyOptions.options().returnNew(true))
 												.findAndModify();
+				
+				UpdateResult movieUpdateResult = mongoTemplate
+						.update(MovieEntity.class)
+						.matching(movieWatchListQuery)
+						.apply(movieWatchListUpdate)
+						.first();
+
+				if(!movieUpdateResult.wasAcknowledged() || movieUpdateResult.getMatchedCount() <= 0)
+					throw new EmptyResultDataAccessException("no result found", 0);
 				
 				entityListUpdatedResponseBody.setStatus(false);
 				entityListUpdatedResponseBody.setSize(target.get().getWatchListLength());

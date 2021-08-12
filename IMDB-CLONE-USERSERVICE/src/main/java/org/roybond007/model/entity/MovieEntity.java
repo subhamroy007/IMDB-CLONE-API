@@ -43,7 +43,7 @@ public class MovieEntity {
 	private List<EntityReferenceWithTimestamp> reviewList;
 	private List<EntityReferenceWithTimestamp> wishList = new ArrayList<>();
 	private List<EntityReferenceWithTimestamp> watchList = new ArrayList<>();
-	
+
 	@Version
 	private long version;
 	

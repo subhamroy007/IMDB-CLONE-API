@@ -26,6 +26,10 @@ review:
   list:
     pagesize: 5
 
+moive:
+  querylist:
+    pagesize: 5
+
 gateway:
   key: mygatewaykey
     

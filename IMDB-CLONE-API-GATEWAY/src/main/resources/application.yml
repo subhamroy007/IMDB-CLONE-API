@@ -221,6 +221,68 @@ spring:
         - CustomHeaderPopulateFilterFactory
         - SetPath=/user/data/ratinglist
         uri: lb://imdb-clone-userservice
+      - id: PROFILE-ROUTE
+        predicates:
+        - Path=/user/profile
+        - Method=GET
+        - Query=userId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/user/data/profile
+        uri: lb://imdb-clone-userservice
+      - id: USER-QUICK-INFO-ROUTE
+        predicates:
+        - Path=/user/info
+        - Method=GET
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/user/data/info
+        uri: lb://imdb-clone-userservice
+      - id: MOVIE-SEARCH-ROUTE
+        predicates:
+        - Path=/movie/search
+        - Method=GET
+        - Query=query
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/search
+        uri: lb://imdb-clone-movieservice
+      - id: RECENT-MOVIE-ROUTE
+        predicates:
+        - Path=/movie/recent
+        - Method=GET
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/recent
+        uri: lb://imdb-clone-movieservice
+      - id: TOP-MOVIE-ROUTE
+        predicates:
+        - Path=/movie/top
+        - Method=GET
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/top
+        uri: lb://imdb-clone-movieservice
+      - id: LEAST-MOVIE-ROUTE
+        predicates:
+        - Path=/movie/least
+        - Method=GET
+        - Query=pageId
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/least
+        uri: lb://imdb-clone-movieservice
+      - id: HOME-ROUTE
+        predicates:
+        - Path=/movie/home
+        - Method=GET
+        filters:
+        - CustomHeaderPopulateFilterFactory
+        - SetPath=/movie/fetch/home
+        uri: lb://imdb-clone-movieservice
       
           
 discovery:

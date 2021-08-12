@@ -11,22 +11,17 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class MovieInfoResponseBody {
+public class MovieSearchResponseObject {
 
 	private String id;
 	private String title;
-	private String description;
-	private long timestamp;
 	private long length;
 	private String posterLink;
-	private String trailerLink;
-	private long noOfReviews;
 	private long noOfRatings;
 	private double avgRating;
 	private String genres;
 	private long userRating;
 	private boolean isWishListed;
 	private boolean isWatchListed;
-	
 	
 }

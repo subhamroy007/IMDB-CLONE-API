@@ -1,6 +1,10 @@
 package org.roybond007.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.roybond007.model.dto.MoviePageObject;
+import org.roybond007.model.dto.UserInfoResponseBody;
+import org.roybond007.model.dto.UserProfileInfoResponseBody;
 import org.roybond007.service.UserDataFetchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -48,4 +52,38 @@ public class UserDataFetchController {
 		return ResponseEntity.ok(moviePageObject);
 	}
 	
+	@GetMapping(value = "/profile", produces = {MediaType.APPLICATION_JSON_VALUE}, params = {"userId"})
+	public ResponseEntity<?> getProfileInfo(@RequestParam(value = "userId") String userId,
+			HttpServletRequest request
+	){
+		
+		String id = "";
+		if(request.getUserPrincipal() != null)
+			id = request.getUserPrincipal().getName();
+		
+		UserProfileInfoResponseBody userProfileInfoResponseBody = userDataFetchService.getProfileInfo(id, userId);
+		
+		MoviePageObject ratingList = userDataFetchService.getRatingListMovie(userId, 0);
+		MoviePageObject wishList = userDataFetchService.getWishListMovie(userId, 0);
+		MoviePageObject watchList = userDataFetchService.getWatchListMovie(userId, 0);
+		
+		userProfileInfoResponseBody.setRatingList(ratingList);
+		userProfileInfoResponseBody.setWishList(wishList);
+		userProfileInfoResponseBody.setWatchList(watchList);
+		
+		return ResponseEntity.ok(userProfileInfoResponseBody);
+	}
+	
+	@GetMapping(value = "/info", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<?> getUserInfo(HttpServletRequest request
+			, @RequestParam(value = "userId", defaultValue = "", required = false) String userId
+	){
+
+		if(request.getUserPrincipal() != null && userId.equals(""))
+			userId = request.getUserPrincipal().getName();
+		
+		UserInfoResponseBody body = userDataFetchService.getUserInfo(userId);
+		
+		return ResponseEntity.ok(body);
+	}
 }

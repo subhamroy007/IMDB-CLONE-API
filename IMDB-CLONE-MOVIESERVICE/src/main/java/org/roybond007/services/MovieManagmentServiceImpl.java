@@ -86,6 +86,8 @@ public class MovieManagmentServiceImpl implements MovieManagmentService {
 		movieEntity.setTitle(movieUploadRequestBody.getTitle());
 		movieEntity.setRatingList(new ArrayList<>());
 		movieEntity.setReviewList(new ArrayList<>());
+		movieEntity.setWatchList(new ArrayList<>());
+		movieEntity.setWishList(new ArrayList<>());
 		movieEntity.setPosterLink(savePoster(movieUploadRequestBody.getPoster()));
 		movieEntity.setTrailerLink(saveTrailer(movieUploadRequestBody.getTrailer()));
 

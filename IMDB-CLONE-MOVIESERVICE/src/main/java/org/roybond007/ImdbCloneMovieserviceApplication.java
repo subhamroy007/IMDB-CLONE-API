@@ -61,13 +61,15 @@ public class ImdbCloneMovieserviceApplication implements CommandLineRunner{
 													.builder()
 													.required("_id", "title", "description", "timestamp", "length"
 															, "posterLink", "trailerLink", "noOfReviews", "noOfRatings"
-															, "totalRating", "genres", "ratingList", "reviewList")
+															, "totalRating", "genres", "ratingList", "reviewList"
+															, "wishList", "watchList", "wishListLength", "watchListLength")
 													.properties(JsonSchemaProperty.string("_id")
 													, JsonSchemaProperty.string("title").minLength(10).maxLength(200)
 													, JsonSchemaProperty.string("description").minLength(10).maxLength(2000)
 													, JsonSchemaProperty.int64("timestamp"), JsonSchemaProperty.int64("length").gt(0)
 													, JsonSchemaProperty.string("posterLink"), JsonSchemaProperty.string("trailerLink")
 													, JsonSchemaProperty.int64("noOfReviews").gte(0), JsonSchemaProperty.int64("noOfRatings").gte(0)
+													, JsonSchemaProperty.int64("watchListLength").gte(0), JsonSchemaProperty.int64("wishListLength").gte(0)
 													, JsonSchemaProperty.int64("totalRating").gte(0)
 													, JsonSchemaProperty.string("genres").minLength(3)
 													, JsonSchemaProperty.array("ratingList")
@@ -85,7 +87,20 @@ public class ImdbCloneMovieserviceApplication implements CommandLineRunner{
 																, JsonSchemaProperty.int64("timestamp")
 																)
 														)
-													
+													, JsonSchemaProperty.array("wishList")
+														.items(JsonSchemaObject.object()
+																.required("_id", "timestamp")
+																.properties(JsonSchemaProperty.string("_id")
+																, JsonSchemaProperty.int64("timestamp")
+																)
+														)
+													, JsonSchemaProperty.array("watchList")
+														.items(JsonSchemaObject.object()
+																.required("_id", "timestamp")
+																.properties(JsonSchemaProperty.string("_id")
+																, JsonSchemaProperty.int64("timestamp")
+																)
+														)
 													)
 													.description("movie json schema is not satisfied")
 													.build();
@@ -109,12 +124,31 @@ public class ImdbCloneMovieserviceApplication implements CommandLineRunner{
 				);
 			
 			mongoTemplate
+			.indexOps(MovieEntity.class)
+			.ensureIndex(new Index()
+					.collation(movieEntityCollation)
+					.named("movieEntityWishListUserIdIndex")
+					.on("wishList._id", Direction.DESC)
+			);
+			
+			mongoTemplate
+			.indexOps(MovieEntity.class)
+			.ensureIndex(new Index()
+					.collation(movieEntityCollation)
+					.named("movieEntityWatchListUserIdIndex")
+					.on("watchList._id", Direction.DESC)
+			);
+			
+			mongoTemplate
 				.indexOps(MovieEntity.class)
 				.ensureIndex(TextIndexDefinition
 						.builder()
-						.onFields("title", "description")
+						.onField("title", 5.0f)
+						.onField("description", 2.0f)
 						.named("movieEntityTextSearchIndex")
 						.withSimpleCollation()
+						.withLanguageOverride("language")
+						.withDefaultLanguage("en")
 						.build()
 				);
 

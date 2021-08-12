@@ -17,10 +17,9 @@ public class EmbeddedMovieObject {
 	private String title;
 	private String description;
 	private String genres;
-	private String poster;
-	private double totalRating;
+	private String posterLink;
+	private double avgRating;
 	private long noOfRatings;
-	private double userRating;
-	
+	private long userRating;
 	
 }
