@@ -745,95 +745,6 @@ let fetchReviewListQuery = [
                 else: false,
               },
             },
-            replyListPage: {
-              $slice: ["$replyList", 0, 5],
-            },
-          },
-        },
-        {
-          $unwind: {
-            path: "$replyListPage",
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $lookup: {
-            from: "replyEntity",
-            let: {
-              replyId: "$replyListPage._id",
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $eq: ["$_id", "$$replyId"],
-                  },
-                },
-              },
-              {
-                $set: {
-                  userReact: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $size: {
-                              $filter: {
-                                input: "$likeList",
-                                as: "elem",
-                                cond: {
-                                  $eq: ["$$elem._id", "roybond007"],
-                                },
-                              },
-                            },
-                          },
-                          1,
-                        ],
-                      },
-                      then: true,
-                      else: false,
-                    },
-                  },
-                },
-              },
-              {
-                $lookup: {
-                  from: "userEntity",
-                  let: {
-                    userId: "$userId",
-                  },
-                  pipeline: [
-                    {
-                      $match: {
-                        $expr: {
-                          $eq: ["$userId", "$$userId"],
-                        },
-                      },
-                    },
-                    {
-                      $project: {
-                        _id: "$userId",
-                        profilePictureLink: 1,
-                      },
-                    },
-                  ],
-                  as: "targetUser",
-                },
-              },
-              {
-                $project: {
-                  _id: 1,
-                  timestamp: 1,
-                  content: 1,
-                  userObject: {
-                    $first: "$targetUser",
-                  },
-                  noOfLikes: 1,
-                  userReact: 1,
-                },
-              },
-            ],
-            as: "target",
           },
         },
         {
@@ -856,11 +767,6 @@ let fetchReviewListQuery = [
             },
             userReact: {
               $first: "$userReact",
-            },
-            list: {
-              $push: {
-                $first: "$target",
-              },
             },
           },
         },
@@ -899,9 +805,6 @@ let fetchReviewListQuery = [
             noOfLikes: 1,
             noOfReplies: 1,
             userReact: 1,
-            replyList: {
-              result: "$list",
-            },
           },
         },
       ],
@@ -1018,11 +921,176 @@ let movieQuery = [
       noOfRatings: 1,
       avgRating: 1,
       genres: 1,
+      noOfReviews: 1,
+      length: 1,
       userRating: {
         $ifNull: ["$rating.rating", 0],
       },
       isWatchListed: 1,
       isWishListed: 1,
+      reviewListPage: {
+        $slice: ["$reviewList", 0, 5],
+      },
+    },
+  },
+  {
+    $unwind: {
+      path: "$reviewListPage",
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+  {
+    $lookup: {
+      from: "reviewEntity",
+      let: {
+        reviewId: "$reviewListPage._id",
+      },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ["$_id", "$$reviewId"],
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            timestamp: 1,
+            userId: 1,
+            content: 1,
+            noOfLikes: 1,
+            noOfReplies: 1,
+            userReact: {
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $size: {
+                        $filter: {
+                          input: "$likeList",
+                          as: "elem",
+                          cond: {
+                            $eq: ["$$elem._id", "roybond007"],
+                          },
+                        },
+                      },
+                    },
+                    1,
+                  ],
+                },
+                then: true,
+                else: false,
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            timestamp: {
+              $first: "$timestamp",
+            },
+            userId: {
+              $first: "$userId",
+            },
+            content: {
+              $first: "$content",
+            },
+            noOfLikes: {
+              $first: "$noOfLikes",
+            },
+            noOfReplies: {
+              $first: "$noOfReplies",
+            },
+            userReact: {
+              $first: "$userReact",
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "userEntity",
+            let: {
+              userId: "$userId",
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$userId", "$$userId"],
+                  },
+                },
+              },
+              {
+                $project: {
+                  _id: "$userId",
+                  profilePictureLink: 1,
+                },
+              },
+            ],
+            as: "targetUser",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            timestamp: 1,
+            userObject: {
+              $first: "$targetUser",
+            },
+            content: 1,
+            noOfLikes: 1,
+            noOfReplies: 1,
+            userReact: 1,
+          },
+        },
+      ],
+      as: "target",
+    },
+  },
+  {
+    $group: {
+      _id: "$_id",
+      title: { $first: "$title" },
+      description: { $first: "$description" },
+      posterLink: { $first: "$posterLink" },
+      trailerLink: { $first: "$trailerLink" },
+      timestamp: { $first: "$timestamp" },
+      noOfRatings: { $first: "$noOfRatings" },
+      length: { $first: "$length" },
+      noOfReviews: { $first: "$noOfReviews" },
+      avgRating: { $first: "$avgRating" },
+      genres: { $first: "$genres" },
+      userRating: { $first: "$userRating" },
+      isWatchListed: { $first: "$isWatchListed" },
+      isWishListed: { $first: "$isWishListed" },
+      list: {
+        $push: {
+          $first: "$target",
+        },
+      },
+    },
+  },
+  {
+    $project: {
+      _id: 1,
+      title: 1,
+      description: 1,
+      posterLink: 1,
+      trailerLink: 1,
+      timestamp: 1,
+      noOfRatings: 1,
+      noOfReviews: 1,
+      length: 1,
+      avgRating: 1,
+      genres: 1,
+      userRating: 1,
+      isWatchListed: 1,
+      isWishListed: 1,
+      reviewList: {
+        result: "$list",
+      },
     },
   },
 ];

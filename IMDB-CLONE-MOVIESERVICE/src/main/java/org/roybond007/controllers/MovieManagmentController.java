@@ -71,6 +71,8 @@ public class MovieManagmentController {
 		BindingResult bindingResult, @RequestParam(value = "movieId") String movieId,
 		HttpServletRequest request){
 
+		System.out.println("starting");
+		
 		if(bindingResult.hasErrors()) {
 			System.err.println("something went wrong when validating review upload request body");
 			bindingResult.getFieldErrors().forEach(error -> {
@@ -87,6 +89,8 @@ public class MovieManagmentController {
 		ReviewUploadResponseBody reviewUploadResponseBody = 
 			movieManagmentService.uploadReview(userId, movieId, reviewUploadRequestBody);
 
+		System.out.println("stoping");
+		
 		return ResponseEntity.status(HttpStatus.CREATED).body(reviewUploadResponseBody);
 	}
 

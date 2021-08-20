@@ -27,6 +27,6 @@ public class MovieInfoResponseBody {
 	private long userRating;
 	private boolean isWishListed;
 	private boolean isWatchListed;
-	
+	ReviewDataFetchResponseBody reviewList;
 	
 }

@@ -22,7 +22,6 @@ public class ReviewDataFetchObject {
 	private long noOfLikes;
 	private long noOfReplies;
 	private boolean userReact;
-	
-	private ReplyDataFetchResponseBody replyList;
+	ReplyDataFetchResponseBody replyList;
 	
 }

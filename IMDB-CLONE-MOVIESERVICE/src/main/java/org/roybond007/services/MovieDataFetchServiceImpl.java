@@ -214,7 +214,7 @@ public class MovieDataFetchServiceImpl implements MovieDataFetchService {
 		
 		
 		try {
-			target = movieEntityRepository.findMovieInfo(movieId, userId);
+			target = movieEntityRepository.findMovieInfo(movieId, userId, 0, (int)reviewPageSize);
 		} catch (DataAccessException e) {
 			System.err.println(e.getLocalizedMessage());
 			throw new ContentLoadFailureException(ErrorUtility.DATA_LAYER_ERROR_CODE,
@@ -242,6 +242,26 @@ public class MovieDataFetchServiceImpl implements MovieDataFetchService {
 		
 		movieInfoResponseBody.setPosterLink(posterLink);
 		movieInfoResponseBody.setTrailerLink(trailerLink);
+		
+		if(movieInfoResponseBody.getReviewList() == null 
+				|| movieInfoResponseBody.getReviewList().getResult() == null
+				|| movieInfoResponseBody.getReviewList().getResult().size() == 0) {
+			movieInfoResponseBody.setReviewList(new ReviewDataFetchResponseBody());
+			
+			movieInfoResponseBody.getReviewList().getResult().forEach(review -> {
+				String profileLink = ServletUriComponentsBuilder
+						.fromCurrentContextPath()
+						.path("/" + review.getUserObject().getProfilePictureLink())
+						.toUriString();
+
+				review.getUserObject().setProfilePictureLink(profileLink);
+			});
+			
+		}
+		
+		movieInfoResponseBody.getReviewList().setId(0);
+		movieInfoResponseBody.getReviewList().setLength(movieInfoResponseBody.getReviewList().getResult().size());
+		movieInfoResponseBody.getReviewList().setSize(reviewPageSize);
 		
 		return movieInfoResponseBody;
 	}
@@ -358,21 +378,7 @@ public class MovieDataFetchServiceImpl implements MovieDataFetchService {
 					.toUriString();
 
 			elem.getUserObject().setProfilePictureLink(profileLink);
-			
-			elem.getReplyList().setId(0);
-			elem.getReplyList().setSize(replyPageSize);
-			if(elem.getReplyList().getResult() == null)
-				elem.getReplyList().setResult(new ArrayList<>());
-			elem.getReplyList().setLength(elem.getReplyList().getResult().size());
-			
-			elem.getReplyList().getResult().forEach(reply -> {
-				String link = ServletUriComponentsBuilder
-						.fromCurrentContextPath()
-						.path("/" + reply.getUserObject().getProfilePictureLink())
-						.toUriString();
 
-				reply.getUserObject().setProfilePictureLink(link);
-			});
 		});
 		
 		return reviewDataFetchResponseBody;
